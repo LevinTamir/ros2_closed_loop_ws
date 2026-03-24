@@ -4,7 +4,9 @@ A test bed for working with closed-loop kinematics in Gazebo using ROS2.
 
 This workspace contains the `volcaniarm_description` package, which demonstrates modeling and simulating robots with closed kinematic chains in the new Gazebo simulator.
 
-<img src=".media/volcaniarm_gazebo.png" alt="Volcaniarm in Gazebo" width="500">
+<p align="center">
+  <img src=".media/volcaniarm_gazebo.png" alt="Volcaniarm in Gazebo" width="500">
+</p>
 
 ## Requirements
 
