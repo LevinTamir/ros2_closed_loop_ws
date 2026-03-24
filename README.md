@@ -6,8 +6,8 @@ This workspace contains the `volcaniarm_description` package, which demonstrates
 
 ## Requirements
 
-- ROS2 Humble (or later)
-- Gazebo Harmonic (or compatible version)
+- ROS2 Jazzy (Tested)
+- Gazebo Harmonic
 
 ## Installation
 
@@ -37,7 +37,3 @@ Launch the volcaniarm simulation:
 ```bash
 ros2 launch volcaniarm_description launch_volcaniarm.launch.py
 ```
-
-## License
-
-See [LICENSE](src/LICENSE) for details.
