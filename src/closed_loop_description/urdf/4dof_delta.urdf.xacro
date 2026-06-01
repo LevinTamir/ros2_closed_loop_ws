@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!-- 4-DoF delta (ported from A_00036-02.urdf) into the volcaniarm closed-loop pattern. -->
 <!-- Assembled home: theta=0, platform drop Z_P=0.7833 m, forearm home bend BETA=2.1872 rad. -->
-<robot name="deltaarm_4dof" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="delta_4dof" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <link name="world"/>
   <joint name="world_to_base" type="fixed">

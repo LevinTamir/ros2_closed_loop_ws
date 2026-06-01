@@ -19,7 +19,7 @@
     <plugin filename="libgz-sim-detachable-joint-system.so"
             name="gz::sim::systems::DetachableJoint">
       <parent_link>Chain1_tip</parent_link>
-      <child_model>deltaarm_3dof</child_model>
+      <child_model>delta_3dof</child_model>
       <child_link>Chain1_dummy</child_link>
     </plugin>
   </gazebo>
@@ -28,7 +28,7 @@
     <plugin filename="libgz-sim-detachable-joint-system.so"
             name="gz::sim::systems::DetachableJoint">
       <parent_link>Chain2_tip</parent_link>
-      <child_model>deltaarm_3dof</child_model>
+      <child_model>delta_3dof</child_model>
       <child_link>Chain2_dummy</child_link>
     </plugin>
   </gazebo>
@@ -37,7 +37,7 @@
     <plugin filename="libgz-sim-detachable-joint-system.so"
             name="gz::sim::systems::DetachableJoint">
       <parent_link>Chain3_tip</parent_link>
-      <child_model>deltaarm_3dof</child_model>
+      <child_model>delta_3dof</child_model>
       <child_link>Chain3_dummy</child_link>
     </plugin>
   </gazebo>

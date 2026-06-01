@@ -74,13 +74,13 @@ def generate_launch_description():
             "-topic",
             "robot_description",
             "-name",
-            "deltaarm_3dof",
+            "delta_3dof",
         ],
     )
 
     # Gazebo publishes only the actuated joints (the URDF JointStatePublisher is filtered),
     # mimicking real encoders. Bridge that back to ROS and remap it to /joint_states.
-    gz_joint_state_topic = "/world/delta_world/model/deltaarm_3dof/joint_state"
+    gz_joint_state_topic = "/world/delta_world/model/delta_3dof/joint_state"
 
     gz_ros2_bridge = Node(
         package="ros_gz_bridge",
