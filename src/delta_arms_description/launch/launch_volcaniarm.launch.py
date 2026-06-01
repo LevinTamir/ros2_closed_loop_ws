@@ -20,11 +20,11 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
-    volcaniarm_description = get_package_share_directory("volcaniarm_description")
+    delta_arms_description = get_package_share_directory("delta_arms_description")
 
     model_arg = DeclareLaunchArgument(
         name="model",
-        default_value=os.path.join(volcaniarm_description, "urdf", "volcaniarm.urdf"),
+        default_value=os.path.join(delta_arms_description, "urdf", "volcaniarm.urdf"),
         description="Absolute path to robot urdf file",
     )
 
@@ -32,7 +32,7 @@ def generate_launch_description():
 
     world_path = PathJoinSubstitution(
         [
-            volcaniarm_description,
+            delta_arms_description,
             "worlds",
             PythonExpression(
                 expression=["'", LaunchConfiguration("world_name"), "'", " + '.sdf'"]
@@ -40,16 +40,16 @@ def generate_launch_description():
         ]
     )
 
-    model_path = str(Path(volcaniarm_description).parent.resolve())
+    model_path = str(Path(delta_arms_description).parent.resolve())
     model_path += pathsep + os.path.join(
-        get_package_share_directory("volcaniarm_description"), "meshes"
+        get_package_share_directory("delta_arms_description"), "meshes"
     )
 
     gazebo_resource_path = SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", model_path)
 
     ros_distro = os.environ["ROS_DISTRO"]
 
-    with open(os.path.join(volcaniarm_description, "urdf", "volcaniarm.urdf"), 'r') as f:
+    with open(os.path.join(delta_arms_description, "urdf", "volcaniarm.urdf"), 'r') as f:
         robot_description_content = f.read()
 
     robot_state_publisher_node = Node(
