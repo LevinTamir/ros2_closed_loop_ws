@@ -67,12 +67,25 @@ def tiny_inertial():
     return inertial(1e-3, 1e-6, 1e-6, 1e-6)
 
 
-def mesh_visual(name, xyz="0 0 0", rpy="0 0 0"):
+# per-link colours (rgba) so the mechanism is easy to read in Gazebo/RViz
+COL_BASE  = "0.25 0.25 0.25 1.0"   # dark grey
+COL_TOOL  = "0.95 0.75 0.10 1.0"   # gold platform
+LEG_UPPER = {1: "0.85 0.20 0.20 1.0", 2: "0.20 0.70 0.25 1.0", 3: "0.25 0.45 0.90 1.0"}
+LEG_FORE  = {1: "0.95 0.55 0.55 1.0", 2: "0.55 0.90 0.60 1.0", 3: "0.55 0.75 1.00 1.0"}
+
+
+def mesh_visual(name, xyz="0 0 0", rpy="0 0 0", color=None, mat=None):
+    mat_xml = ""
+    if color is not None:
+        mat_name = mat if mat else f"mat_{name}"
+        mat_xml = (f'\n      <material name="{mat_name}">'
+                   f'\n        <color rgba="{color}"/>'
+                   f'\n      </material>')
     return (f'    <visual>\n'
             f'      <origin xyz="{xyz}" rpy="{rpy}"/>\n'
             f'      <geometry>\n'
             f'        <mesh filename="package://delta_arms_description/meshes/PARA_ENGINEER/{name}.stl" scale="0.001 0.001 0.001"/>\n'
-            f'      </geometry>\n'
+            f'      </geometry>{mat_xml}\n'
             f'    </visual>')
 
 
@@ -94,7 +107,7 @@ def open_leg(n, phi):
     s = [f'  <!-- ===================== leg {n} (phi = {math.degrees(phi):.0f} deg) ===================== -->']
     # upper arm
     s.append(f'  <link name="Chain{n}_link_1">')
-    s.append(mesh_visual("Oberarm", rpy="1.570 0 1.570"))
+    s.append(mesh_visual("Oberarm", rpy="1.570 0 1.570", color=LEG_UPPER[n], mat=f"mat_upper_{n}"))
     s.append(inertial(M_UPPER, 1e-3, 3.2e-3, 3.2e-3, xyz="0.0379 0 0"))
     s.append('  </link>')
     s.append(rev_joint(f'Chain{n}_1', 'base_link', f'Chain{n}_link_1',
@@ -110,7 +123,7 @@ def open_leg(n, phi):
                        '-3.141592653589793', '3.141592653589793'))
     # universal joint U2 (about Z) -- home 0
     s.append(f'  <link name="Chain{n}_forearm">')
-    s.append(mesh_visual("Unterarm", rpy="0 3.141 0"))
+    s.append(mesh_visual("Unterarm", rpy="0 3.141 0", color=LEG_FORE[n], mat=f"mat_fore_{n}"))
     s.append(inertial(M_FORE, 5e-5, 1.6e-3, 1.6e-3, xyz="0.0834 0 0"))
     s.append('  </link>')
     s.append(rev_joint(f'Chain{n}_U2', f'Chain{n}_link_virtual', f'Chain{n}_forearm',
@@ -154,7 +167,7 @@ def leg1_tree_closure():
     """Spanning-tree path: leg-1 forearm_tip -> (spherical joint) -> tool0 (the moving platform)."""
     s = ['  <!-- ===================== platform (tool0) via leg-1 spanning tree ===================== -->']
     s.append('  <link name="tool0">')
-    s.append(mesh_visual("Werkzeugtraeger", rpy="0 0 0.53"))
+    s.append(mesh_visual("Werkzeugtraeger", rpy="0 0 0.53", color=COL_TOOL, mat="mat_tool"))
     s.append(inertial(M_TOOL, 1.5e-3, 1.5e-3, 2e-3))
     s.append('  </link>')
     s.append(spherical_chain('Chain1_closure', 'Chain1_forearm_tip', 'tool0',
@@ -217,7 +230,7 @@ def build():
            '  </joint>',
            '',
            '  <link name="base_link">',
-           mesh_visual("Kopfplatte", xyz="0 0 0.025", rpy="0 0 -0.53"),
+           mesh_visual("Kopfplatte", xyz="0 0 0.025", rpy="0 0 -0.53", color=COL_BASE, mat="mat_base"),
            inertial(1.0, 1.5e-2, 1.5e-2, 2e-2),
            '  </link>',
            '']
