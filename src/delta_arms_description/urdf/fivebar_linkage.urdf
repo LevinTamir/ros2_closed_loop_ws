@@ -4,56 +4,16 @@
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
   name="fivebar_linkage">
-  <!-- World frame - robot is spawned at z=0, base_link is 1m above -->
+  <!-- World frame: base_link (the linkage mount) is fixed ~0.96 m above the ground -->
   <link name="world"/>
   <joint name="world_to_base" type="fixed">
-    <origin xyz="0 0 0.98" rpy="0 0 3.14159"/>
+    <origin xyz="0.218 0 0.96" rpy="0 3.14159 0"/>
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
 
   <link
     name="base_link">
-    <inertial>
-      <origin
-        xyz="0.0033183 1.7612E-06 -0.24794"
-        rpy="0 0 0" />
-      <mass
-        value="5.4796" />
-      <inertia
-        ixx="0.36605"
-        ixy="-2.0049E-09"
-        ixz="1.5542E-08"
-        iyy="0.19294"
-        iyz="-3.1213E-09"
-        izz="0.31414" />
-    </inertial>
-    <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
-      </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.25 0.25 0.25 1.0" />
-      </material>
-    </visual>
-    <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
-      <geometry>
-        <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
-      </geometry>
-    </collision>
-  </link>
-  <link
-    name="linkage_base_link">
     <inertial>
       <origin
         xyz="0.056584 -3.9432E-11 0.053171"
@@ -74,7 +34,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/linkage_base_link.STL" />
+          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -88,23 +48,10 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/linkage_base_link.STL" />
+          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
       </geometry>
     </collision>
   </link>
-  <joint
-    name="linkage_base_joint"
-    type="fixed">
-    <origin
-      xyz="-0.218000000000013 0 -0.0199999999999894"
-      rpy="3.14159265358979 0 0" />
-    <parent
-      link="base_link" />
-    <child
-      link="linkage_base_link" />
-    <axis
-      xyz="0 0 0" />
-  </joint>
   <link
     name="Chain1_link_1">
     <inertial>
@@ -152,7 +99,7 @@
       xyz="0.285 -0.215 0.0632"
       rpy="0.7854 0 0" />
     <parent
-      link="linkage_base_link" />
+      link="base_link" />
     <child
       link="Chain1_link_1" />
     <axis
@@ -274,7 +221,7 @@
       xyz="0.289 0.215 0.0632"
       rpy="-0.7854 0 0" />
     <parent
-      link="linkage_base_link" />
+      link="base_link" />
     <child
       link="Chain2_link_1" />
     <axis
