@@ -139,21 +139,27 @@ This is the recipe for turning an ordinary URDF into a closed-loop Gazebo model,
 **5-bar linkage**. A 5-bar has two serial arms (`Chain1` = left, `Chain2` = right) whose tips must
 meet, and that meeting point is the loop to close.
 
-Each robot is described by two xacro files: the kinematics live in
-[`fivebar_linkage.urdf.xacro`](src/closed_loop_description/urdf/fivebar_linkage.urdf.xacro) and every
-Gazebo-specific element (the system plugins and the loop-closure `DetachableJoint`s) lives in
+Each robot is described by two xacro files. The kinematics (links and joints) live in
+[`fivebar_linkage.urdf.xacro`](src/closed_loop_description/urdf/fivebar_linkage.urdf.xacro) and are
+shared by both simulation and real hardware. Every simulation-only element (the Gazebo system
+plugins and the loop-closure `DetachableJoint`s) lives in
 [`fivebar_linkage.gazebo.xacro`](src/closed_loop_description/urdf/fivebar_linkage.gazebo.xacro),
-pulled in with a single `<xacro:include>`:
+included only when `sim:=true`:
 
 ```xml
 <robot name="fivebar_linkage" xmlns:xacro="http://www.ros.org/wiki/xacro">
-  ...  <!-- links and joints -->
-  <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
+  ...  <!-- links and joints, shared by sim and real -->
+  <xacro:arg name="sim" default="true"/>
+  <xacro:if value="$(arg sim)">
+    <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
+  </xacro:if>
 </robot>
 ```
 
-The steps below show the pieces in the order you would add them; steps 1 to 3 go in the
-`.urdf.xacro`, steps 4 to 6 in the `.gazebo.xacro`.
+This keeps a clean split between what a *simulated* robot needs and what a *real* one needs: for
+real-hardware bringup (`sim:=false`) the Gazebo file is skipped, and a `ros2_control` description
+would be included instead. Steps 1 to 3 below go in the `.urdf.xacro`; steps 4 to 6 in the
+`.gazebo.xacro`.
 
 ### 1. Anchor the robot to the world
 
@@ -230,8 +236,13 @@ One `JointPositionController` per motor, each listening on its own `cmd_pos` top
           name="gz::sim::systems::JointPositionController">
     <joint_name>Chain1_1</joint_name>
     <topic>/fivebar_linkage/Chain1_1/cmd_pos</topic>
-    <p_gain>10</p_gain> <i_gain>1</i_gain> <d_gain>1</d_gain>
-    <i_max>5</i_max> <i_min>-5</i_min> <cmd_max>10</cmd_max> <cmd_min>-10</cmd_min>
+    <p_gain>10</p_gain>
+    <i_gain>1</i_gain>
+    <d_gain>1</d_gain>
+    <i_max>5</i_max>
+    <i_min>-5</i_min>
+    <cmd_max>10</cmd_max>
+    <cmd_min>-10</cmd_min>
   </plugin>
 </gazebo>
 ```
@@ -314,6 +325,4 @@ spawn, which gives a clean zero-impulse attach.
 
 - [ros2_closed_loop_demo](https://github.com/wiartallajan/ros2_closed_loop_demo)
 - [gz_attach_links](https://github.com/oKermorgant/gz_attach_links)
-- [joint_state_transformer_example](https://github.com/HIT-Robotics/joint_state_transformer_example):
-  source of the delta robot descriptions (Heilbronn University of Applied Sciences, supported by
-  Autonox robotics GmbH).
+- [joint_state_transformer_example](https://github.com/HIT-Robotics/joint_state_transformer_example): source of the delta robot descriptions (Heilbronn University of Applied Sciences, supported by Autonox robotics GmbH).

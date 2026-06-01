@@ -388,6 +388,12 @@
          - Chain1_2, Chain2_2, Chain1_closure
        =================================================================== -->
 
-  <!-- Gazebo elements (plugins + loop closures) live in a separate macro file -->
-  <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
+  <!-- Sim vs. real separation: the kinematics above are shared by both. The Gazebo
+       system plugins and DetachableJoint loop closures are simulation-only, so they live
+       in a separate file included only when sim:=true. For real-hardware bringup
+       (sim:=false) a fivebar_linkage.ros2_control.xacro will be included here instead (added later). -->
+  <xacro:arg name="sim" default="true"/>
+  <xacro:if value="$(arg sim)">
+    <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
+  </xacro:if>
 </robot>
