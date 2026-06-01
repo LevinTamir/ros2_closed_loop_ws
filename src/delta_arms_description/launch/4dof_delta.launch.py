@@ -81,10 +81,10 @@ def generate_launch_description():
         executable="parameter_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/deltaarm_4dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/deltaarm_4dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/deltaarm_4dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/deltaarm_4dof/Chain4_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_4dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_4dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_4dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_4dof/Chain4_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
         ],
     )
 

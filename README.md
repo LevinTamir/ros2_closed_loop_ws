@@ -40,32 +40,49 @@ source install/setup.bash
 
 ## Usage
 
-Launch any example:
+Open two terminals: one runs the simulation, the other sends joint commands (positions in radians,
+`std_msgs/Float64` on `/<robot>/<joint>/cmd_pos`).
+
+### 5-bar linkage (the reference example)
 
 ```bash
-ros2 launch delta_arms_description fivebar_linkage.launch.py   # planar 5-bar linkage
-ros2 launch delta_arms_description 3dof_delta.launch.py        # 3-DoF translational delta
-ros2 launch delta_arms_description 4dof_delta.launch.py        # 4-DoF delta (telescopic + EE rotation)
+# terminal 1 — simulation
+ros2 launch delta_arms_description fivebar_linkage.launch.py
 ```
 
-Command the actuated joints from another terminal (positions in radians). Each actuated joint takes a
-`std_msgs/Float64` on `/<robot>/<joint>/cmd_pos`:
-
 ```bash
-# 5-bar: two motors (Chain1_1 = left, Chain2_1 = right)
+# terminal 2 — the two motors (Chain1_1 = left, Chain2_1 = right)
 ros2 topic pub -1 /fivebar_linkage/Chain1_1/cmd_pos std_msgs/msg/Float64 "{data: 0.3}"
-
-# 3-DoF delta: equal angles on all three arms move the platform straight up/down,
-# unequal angles move it sideways — the platform always stays level
-ros2 topic pub -1 /deltaarm_3dof/Chain1_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
-ros2 topic pub -1 /deltaarm_3dof/Chain2_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
-ros2 topic pub -1 /deltaarm_3dof/Chain3_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
-
-# 4-DoF delta: Chain4_1 rotates the end-effector flange
-ros2 topic pub -1 /deltaarm_4dof/Chain4_1/cmd_pos std_msgs/msg/Float64 "{data: 1.0}"
+ros2 topic pub -1 /fivebar_linkage/Chain2_1/cmd_pos std_msgs/msg/Float64 "{data: -0.3}"
 ```
 
-> Note: the delta command topics use `deltaarm_3dof` / `deltaarm_4dof` (not `3dof_delta`) because ROS 2
+### 3-DoF delta
+
+```bash
+ros2 launch delta_arms_description 3dof_delta.launch.py
+```
+
+```bash
+# equal angles on all three arms move the platform up/down; unequal angles move it
+# sideways — the platform always stays level
+ros2 topic pub -1 /delta_3dof/Chain1_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
+ros2 topic pub -1 /delta_3dof/Chain2_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
+ros2 topic pub -1 /delta_3dof/Chain3_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
+```
+
+### 4-DoF delta
+
+```bash
+ros2 launch delta_arms_description 4dof_delta.launch.py
+```
+
+```bash
+# the three arms translate the platform; Chain4_1 rotates the end-effector flange
+ros2 topic pub -1 /delta_4dof/Chain1_1/cmd_pos std_msgs/msg/Float64 "{data: 0.3}"
+ros2 topic pub -1 /delta_4dof/Chain4_1/cmd_pos std_msgs/msg/Float64 "{data: 1.0}"
+```
+
+> Note: the delta command topics use `delta_3dof` / `delta_4dof` (not `3dof_delta`) because ROS 2
 > topic names may not start with a digit.
 
 ## Repository structure

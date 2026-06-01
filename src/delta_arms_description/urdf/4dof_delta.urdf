@@ -693,7 +693,7 @@
     <plugin filename="libgz-sim-joint-position-controller-system.so"
             name="gz::sim::systems::JointPositionController">
       <joint_name>Chain1_1</joint_name>
-      <topic>/deltaarm_4dof/Chain1_1/cmd_pos</topic>
+      <topic>/delta_4dof/Chain1_1/cmd_pos</topic>
       <p_gain>30</p_gain>
       <i_gain>0.5</i_gain>
       <d_gain>4</d_gain>
@@ -707,7 +707,7 @@
     <plugin filename="libgz-sim-joint-position-controller-system.so"
             name="gz::sim::systems::JointPositionController">
       <joint_name>Chain2_1</joint_name>
-      <topic>/deltaarm_4dof/Chain2_1/cmd_pos</topic>
+      <topic>/delta_4dof/Chain2_1/cmd_pos</topic>
       <p_gain>30</p_gain>
       <i_gain>0.5</i_gain>
       <d_gain>4</d_gain>
@@ -721,7 +721,7 @@
     <plugin filename="libgz-sim-joint-position-controller-system.so"
             name="gz::sim::systems::JointPositionController">
       <joint_name>Chain3_1</joint_name>
-      <topic>/deltaarm_4dof/Chain3_1/cmd_pos</topic>
+      <topic>/delta_4dof/Chain3_1/cmd_pos</topic>
       <p_gain>30</p_gain>
       <i_gain>0.5</i_gain>
       <d_gain>4</d_gain>
@@ -735,7 +735,7 @@
     <plugin filename="libgz-sim-joint-position-controller-system.so"
             name="gz::sim::systems::JointPositionController">
       <joint_name>Chain4_1</joint_name>
-      <topic>/deltaarm_4dof/Chain4_1/cmd_pos</topic>
+      <topic>/delta_4dof/Chain4_1/cmd_pos</topic>
       <p_gain>15</p_gain>
       <i_gain>0.5</i_gain>
       <d_gain>2</d_gain>

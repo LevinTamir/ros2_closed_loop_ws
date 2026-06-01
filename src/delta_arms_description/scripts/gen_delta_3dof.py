@@ -193,7 +193,7 @@ def position_controller(n):
             f'    <plugin filename="libgz-sim-joint-position-controller-system.so"\n'
             f'            name="gz::sim::systems::JointPositionController">\n'
             f'      <joint_name>Chain{n}_1</joint_name>\n'
-            f'      <topic>/deltaarm_3dof/Chain{n}_1/cmd_pos</topic>\n'
+            f'      <topic>/delta_3dof/Chain{n}_1/cmd_pos</topic>\n'
             f'      <p_gain>20</p_gain>\n'
             f'      <i_gain>0.5</i_gain>\n'
             f'      <d_gain>3</d_gain>\n'

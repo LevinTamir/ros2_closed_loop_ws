@@ -260,8 +260,8 @@ def build():
         out.append('')
     out.append('  <!-- actuated joint controllers: 3 arms + 1 EE rotation -->')
     for n in (1, 2, 3):
-        out.append(position_controller(f'Chain{n}_1', f'/deltaarm_4dof/Chain{n}_1/cmd_pos'))
-    out.append(position_controller('Chain4_1', '/deltaarm_4dof/Chain4_1/cmd_pos', p="15", d="2"))
+        out.append(position_controller(f'Chain{n}_1', f'/delta_4dof/Chain{n}_1/cmd_pos'))
+    out.append(position_controller('Chain4_1', '/delta_4dof/Chain4_1/cmd_pos', p="15", d="2"))
     out.append('')
     out.append('  <gazebo>')
     out.append('    <plugin filename="libgz-sim-joint-state-publisher-system.so"')
