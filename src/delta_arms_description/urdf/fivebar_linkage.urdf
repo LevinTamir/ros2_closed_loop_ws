@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="fivebar_linkage">
+  <!-- World frame - robot is spawned at z=0, base_link is 1m above -->
+  <link name="world"/>
+  <joint name="world_to_base" type="fixed">
+    <origin xyz="0 0 0.98" rpy="0 0 3.14159"/>
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.0033183 1.7612E-06 -0.24794"
+        rpy="0 0 0" />
+      <mass
+        value="5.4796" />
+      <inertia
+        ixx="0.36605"
+        ixy="-2.0049E-09"
+        ixz="1.5542E-08"
+        iyy="0.19294"
+        iyz="-3.1213E-09"
+        izz="0.31414" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="linkage_base_link">
+    <inertial>
+      <origin
+        xyz="0.056584 -3.9432E-11 0.053171"
+        rpy="0 0 0" />
+      <mass
+        value="5.2358" />
+      <inertia
+        ixx="0.045054"
+        ixy="5.2217E-06"
+        ixz="0.00071509"
+        iyy="0.014737"
+        iyz="3.2233E-10"
+        izz="0.053493" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/linkage_base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/linkage_base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="linkage_base_joint"
+    type="fixed">
+    <origin
+      xyz="-0.218000000000013 0 -0.0199999999999894"
+      rpy="3.14159265358979 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="linkage_base_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Chain1_link_1">
+    <inertial>
+      <origin
+        xyz="-0.0035388 0.00032928 0.20807"
+        rpy="0 0 0" />
+      <mass
+        value="0.25539" />
+      <inertia
+        ixx="0.0015999"
+        ixy="2.5707E-06"
+        ixz="-4.8958E-07"
+        iyy="0.0016014"
+        iyz="-4.1044E-06"
+        izz="8.8962E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Chain1_1"
+    type="revolute">
+    <origin
+      xyz="0.285 -0.215 0.0632"
+      rpy="0.7854 0 0" />
+    <parent
+      link="linkage_base_link" />
+    <child
+      link="Chain1_link_1" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="10"
+      velocity="10" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+  <link
+    name="Chain1_link_2">
+    <inertial>
+      <origin
+        xyz="-1.1102E-15 -0.019365 0.31121"
+        rpy="0 0 0" />
+      <mass
+        value="0.31139" />
+      <inertia
+        ixx="0.0060642"
+        ixy="-1.1232E-13"
+        ixz="7.5126E-14"
+        iyy="0.0060587"
+        iyz="1.0603E-13"
+        izz="0.00011844" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Chain1_2"
+    type="revolute">
+    <origin
+      xyz="0.004 0.02 0.41621"
+      rpy="-1.7053 0 0" />
+    <parent
+      link="Chain1_link_1" />
+    <child
+      link="Chain1_link_2" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="10"
+      velocity="10" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+  <link
+    name="Chain2_link_1">
+    <inertial>
+      <origin
+        xyz="-0.0035272 -0.0032768 0.20822"
+        rpy="0 0 0" />
+      <mass
+        value="0.25516" />
+      <inertia
+        ixx="0.0015999"
+        ixy="2.5707E-06"
+        ixz="-4.8958E-07"
+        iyy="0.0016014"
+        iyz="2.7775E-06"
+        izz="8.8958E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Chain2_1"
+    type="revolute">
+    <origin
+      xyz="0.289 0.215 0.0632"
+      rpy="-0.7854 0 0" />
+    <parent
+      link="linkage_base_link" />
+    <child
+      link="Chain2_link_1" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="10"
+      velocity="10" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+  <link
+    name="Chain2_link_2">
+    <inertial>
+      <origin
+        xyz="-0.00010972 0.018304 0.32828"
+        rpy="0 0 0" />
+      <mass
+        value="0.32945" />
+      <inertia
+        ixx="0.0060651"
+        ixy="4.6871E-12"
+        ixz="3.074E-12"
+        iyy="0.0060639"
+        iyz="3.1157E-09"
+        izz="0.00012364" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.25 0.25 0.25 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Chain2_2"
+    type="revolute">
+    <origin
+      xyz="0.004 -0.02 0.41621"
+      rpy="1.7053 0 0" />
+    <parent
+      link="Chain2_link_1" />
+    <child
+      link="Chain2_link_2" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-3.14"
+      upper="3.14"
+      effort="10"
+      velocity="10" />
+    <dynamics
+      damping="0.1"
+      friction="0.1" />
+  </joint>
+
+  <!-- ===================================================================
+       5-BAR LINKAGE CLOSURE
+       FK at q=0 (all revolute joints at zero):
+         Cumulative Rx to left arm link  : 2.2217 rad
+         Cumulative Rx to right arm link : -2.2217 rad  (mirror)
+         Left arm origin in base_link    : (0.071,  0.4953, -0.3918)
+         Right arm origin in base_link   : (0.075, -0.4953, -0.3918)
+         Arm z-axis (left)  in base_link : [0, -0.7956, -0.6059]
+         Arm z-axis (right) in base_link : [0, +0.7956, -0.6059]
+         Tip length L = 0.4953/0.7956   = 0.6225 m  (left arm CoM at L/2 = 0.311 m confirms)
+         Closure point in base_link      : (~0.073, 0, -0.769)
+         Chain1_closure rpy_r = 4.0615 - 2.2217 = 1.8398 rad  (aligns dummy with right tip frame)
+       =================================================================== -->
+
+  <!-- Massless tip frame fixed to the right arm at the physical closure point -->
+  <link name="Chain2_tip">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.001" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.008" />
+      </geometry>
+      <material name="tip_green">
+        <color rgba="0.95 0.75 0.10 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.008" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Chain2_tip_joint" type="fixed">
+    <origin xyz="0 0 0.6225" rpy="0 0 0" />
+    <parent link="Chain2_link_2" />
+    <child link="Chain2_tip" />
+  </joint>
+  <!-- Prevent Gazebo from merging this fixed joint so DetachableJoint can find the link -->
+  <gazebo reference="Chain2_tip_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <!-- Closure dummy link: URDF-tree leaf on the left arm, DetachableJoint target -->
+  <link name="Chain1_dummy">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.001" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.008" />
+      </geometry>
+      <material name="closure_purple">
+        <color rgba="0.95 0.75 0.10 1.0" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.008" />
+      </geometry>
+    </collision>
+  </link>
+  <!-- rpy=(1.8398,0,0) rotates Chain1_dummy so its world frame matches
+       Chain2_tip at q=0 → DetachableJoint locks with zero relative rotation -->
+  <joint name="Chain1_closure" type="revolute">
+    <origin xyz="0 0 0.6225" rpy="1.8398 0 0" />
+    <parent link="Chain1_link_2" />
+    <child link="Chain1_dummy" />
+    <axis xyz="1 0 0" />
+    <limit lower="-3.14" upper="3.14" effort="0" velocity="10" />
+    <dynamics damping="0.1" friction="0.0" />
+  </joint>
+
+  <!-- DetachableJoint: auto-attaches at launch, closing the 5-bar loop.
+       parent = Chain2_tip  (right chain leaf)
+       child  = Chain1_dummy  (left chain leaf)
+       Both frames are coincident at q=0, so no snap/impulse at attach time. -->
+  <gazebo>
+    <plugin filename="libgz-sim-detachable-joint-system.so"
+            name="gz::sim::systems::DetachableJoint">
+      <parent_link>Chain2_tip</parent_link>
+      <child_model>fivebar_linkage</child_model>
+      <child_link>Chain1_dummy</child_link>
+    </plugin>
+  </gazebo>
+
+  <!-- ===================================================================
+       JOINT POSITION CONTROLLERS
+       Actuated joints of the 5-bar linkage:
+         - Chain1_1   (motor 1)
+         - Chain2_1  (motor 2)
+       Passive joints are driven by the linkage constraint:
+         - Chain1_2, Chain2_2, Chain1_closure
+       =================================================================== -->
+
+  <gazebo>
+    <plugin filename="libgz-sim-joint-position-controller-system.so"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>Chain1_1</joint_name>
+      <topic>/fivebar_linkage/Chain1_1/cmd_pos</topic>
+      <p_gain>10</p_gain>
+      <i_gain>1</i_gain>
+      <d_gain>1</d_gain>
+      <i_max>5</i_max>
+      <i_min>-5</i_min>
+      <cmd_max>10</cmd_max>
+      <cmd_min>-10</cmd_min>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgz-sim-joint-position-controller-system.so"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>Chain2_1</joint_name>
+      <topic>/fivebar_linkage/Chain2_1/cmd_pos</topic>
+      <p_gain>10</p_gain>
+      <i_gain>1</i_gain>
+      <d_gain>1</d_gain>
+      <i_max>5</i_max>
+      <i_min>-5</i_min>
+      <cmd_max>10</cmd_max>
+      <cmd_min>-10</cmd_min>
+    </plugin>
+  </gazebo>
+
+  <!-- Joint state publisher: broadcasts all joint positions back to ROS2 -->
+  <gazebo>
+    <plugin filename="libgz-sim-joint-state-publisher-system.so"
+            name="gz::sim::systems::JointStatePublisher"/>
+  </gazebo>
+
+</robot>

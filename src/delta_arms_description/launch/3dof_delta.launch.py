@@ -22,7 +22,7 @@ def generate_launch_description():
 
     model_arg = DeclareLaunchArgument(
         name="model",
-        default_value=os.path.join(delta_arms_description, "urdf", "delta_4dof.urdf"),
+        default_value=os.path.join(delta_arms_description, "urdf", "3dof_delta.urdf"),
         description="Absolute path to robot urdf file",
     )
 
@@ -43,7 +43,7 @@ def generate_launch_description():
 
     gazebo_resource_path = SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", model_path)
 
-    with open(os.path.join(delta_arms_description, "urdf", "delta_4dof.urdf"), "r") as f:
+    with open(os.path.join(delta_arms_description, "urdf", "3dof_delta.urdf"), "r") as f:
         robot_description_content = f.read()
 
     robot_state_publisher_node = Node(
@@ -72,7 +72,7 @@ def generate_launch_description():
             "-topic",
             "robot_description",
             "-name",
-            "deltaarm_4dof",
+            "deltaarm_3dof",
         ],
     )
 
@@ -81,10 +81,9 @@ def generate_launch_description():
         executable="parameter_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/deltaarm_4dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/deltaarm_4dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/deltaarm_4dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/deltaarm_4dof/Chain4_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/deltaarm_3dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/deltaarm_3dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/deltaarm_3dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
         ],
     )
 

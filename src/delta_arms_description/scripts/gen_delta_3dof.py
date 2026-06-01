@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate urdf/delta_3dof.urdf for the 3-DoF delta (ported from PARA_ENGINEER.urdf).
+"""Generate urdf/3dof_delta.urdf for the 3-DoF delta (ported from PARA_ENGINEER.urdf).
 
 The source URDF expresses its closed loops with a custom <constraint type="spherical_joint">
 extension that vanilla ROS/Gazebo cannot parse, plus a MoveIt-only virtual tool chain. Here we
@@ -20,7 +20,7 @@ chain reproduces the source's spherical_joint while letting the loop close acros
 The assembled home (theta = 0) is baked into the joint origins, so at q = 0 every welded pair of
 frames is coincident (zero-impulse attach) and tool0 sits at the platform centre.
 
-Run:  python3 scripts/gen_delta_3dof.py   (writes ../urdf/delta_3dof.urdf relative to this file)
+Run:  python3 scripts/gen_delta_3dof.py   (writes ../urdf/3dof_delta.urdf relative to this file)
 """
 import math
 import os
@@ -248,7 +248,7 @@ def build():
 
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
-    dst = os.path.join(here, "..", "urdf", "delta_3dof.urdf")
+    dst = os.path.join(here, "..", "urdf", "3dof_delta.urdf")
     with open(dst, "w") as f:
         f.write(build())
     print(f"wrote {os.path.normpath(dst)}")

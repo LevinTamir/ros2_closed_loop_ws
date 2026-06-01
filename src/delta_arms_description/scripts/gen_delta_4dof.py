@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate urdf/delta_4dof.urdf for the 4-DoF delta (ported from A_00036-02.urdf).
+"""Generate urdf/4dof_delta.urdf for the 4-DoF delta (ported from A_00036-02.urdf).
 
 Same closed-loop technique as the 3-DoF delta (see gen_delta_3dof.py): tool_holder (the moving
 platform) hangs from a passive 3-prismatic X-Y-Z chain so it has 3 translational DOF and stays
@@ -13,7 +13,7 @@ The 4-DoF adds the A_00036 central column:
     DetachableJoint weld (+3R spherical) at the bottom so it tracks the platform.
 
 Dimensions are taken from A_00036-02.urdf (a ~1 m-reach robot). Run:
-  python3 scripts/gen_delta_4dof.py   (writes ../urdf/delta_4dof.urdf relative to this file)
+  python3 scripts/gen_delta_4dof.py   (writes ../urdf/4dof_delta.urdf relative to this file)
 """
 import math
 import os
@@ -274,7 +274,7 @@ def build():
 
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
-    dst = os.path.join(here, "..", "urdf", "delta_4dof.urdf")
+    dst = os.path.join(here, "..", "urdf", "4dof_delta.urdf")
     with open(dst, "w") as f:
         f.write(build())
     print(f"wrote {os.path.normpath(dst)}")
