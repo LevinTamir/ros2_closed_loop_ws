@@ -16,6 +16,7 @@ from launch.substitutions import (
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+import xacro
 from launch_ros.parameter_descriptions import ParameterValue
 
 
@@ -24,7 +25,7 @@ def generate_launch_description():
 
     model_arg = DeclareLaunchArgument(
         name="model",
-        default_value=os.path.join(closed_loop_description, "urdf", "fivebar_linkage.urdf"),
+        default_value=os.path.join(closed_loop_description, "urdf", "fivebar_linkage.urdf.xacro"),
         description="Absolute path to robot urdf file",
     )
 
@@ -49,8 +50,9 @@ def generate_launch_description():
 
     ros_distro = os.environ["ROS_DISTRO"]
 
-    with open(os.path.join(closed_loop_description, "urdf", "fivebar_linkage.urdf"), 'r') as f:
-        robot_description_content = f.read()
+    robot_description_content = xacro.process_file(
+        os.path.join(closed_loop_description, "urdf", "fivebar_linkage.urdf.xacro")
+    ).toxml()
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -82,6 +84,10 @@ def generate_launch_description():
         ],
     )
 
+    # Gazebo publishes only the actuated joints (the URDF JointStatePublisher is filtered),
+    # mimicking real encoders. Bridge that back to ROS and remap it to /joint_states.
+    gz_joint_state_topic = "/world/fivebar_world/model/fivebar_linkage/joint_state"
+
     gz_ros2_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -89,7 +95,9 @@ def generate_launch_description():
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
             "/fivebar_linkage/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
             "/fivebar_linkage/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            gz_joint_state_topic + "@sensor_msgs/msg/JointState[gz.msgs.Model",
         ],
+        remappings=[(gz_joint_state_topic, "/joint_states")],
     )
 
     return LaunchDescription(

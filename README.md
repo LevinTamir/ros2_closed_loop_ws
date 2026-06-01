@@ -92,10 +92,13 @@ ros2 topic pub -1 /delta_4dof/Chain4_1/cmd_pos std_msgs/msg/Float64 "{data: 1.0}
 ```
 src/
 ├── closed_loop_description/        # robot models: what the robots are
-│   ├── urdf/
-│   │   ├── fivebar_linkage.urdf
-│   │   ├── 3dof_delta.urdf
-│   │   └── 4dof_delta.urdf
+│   ├── urdf/                        # per robot: a *.urdf.xacro that includes a *.gazebo.xacro
+│   │   ├── fivebar_linkage.urdf.xacro    # links + joints (kinematics, visuals)
+│   │   ├── fivebar_linkage.gazebo.xacro  # <gazebo> plugins + loop closures
+│   │   ├── 3dof_delta.urdf.xacro
+│   │   ├── 3dof_delta.gazebo.xacro
+│   │   ├── 4dof_delta.urdf.xacro
+│   │   └── 4dof_delta.gazebo.xacro
 │   ├── worlds/
 │   │   ├── fivebar_world.sdf        # DART physics world for the 5-bar
 │   │   └── delta_world.sdf          # DART world for the deltas (dantzig solver)
@@ -121,7 +124,9 @@ The loop is instead closed **at runtime** by Gazebo's `DetachableJoint` plugin, 
 together once the model is spawned. The trick that makes this clean is to arrange the two welded
 links so their frames are **coincident at the robot's assembled "home" pose**, so the weld attaches
 with no snap or impulse. Actuated joints are driven by `JointPositionController` plugins over
-`cmd_pos` topics, and all joint states are republished by a `JointStatePublisher` plugin.
+`cmd_pos` topics, and the actuated joint positions are reported back on `/joint_states` by a
+`JointStatePublisher` plugin, filtered to the active joints so the feedback matches real hardware
+(encoders sit on the motors; the passive joints are not measured).
 
 The two deltas extend this. Each forearm rod is given a ball joint at each end (a `DetachableJoint`
 weld plus a 3-revolute "spherical" chain reproduces the source `spherical_joint` constraints), and
@@ -131,9 +136,24 @@ DOF and stays level by construction.
 ## Implementation guide: adapting your own robot
 
 This is the recipe for turning an ordinary URDF into a closed-loop Gazebo model, illustrated with the
-**5-bar linkage** ([`fivebar_linkage.urdf`](src/closed_loop_description/urdf/fivebar_linkage.urdf)).
-A 5-bar has two serial arms (`Chain1` = left, `Chain2` = right) whose tips must meet, and that
-meeting point is the loop to close.
+**5-bar linkage**. A 5-bar has two serial arms (`Chain1` = left, `Chain2` = right) whose tips must
+meet, and that meeting point is the loop to close.
+
+Each robot is described by two xacro files: the kinematics live in
+[`fivebar_linkage.urdf.xacro`](src/closed_loop_description/urdf/fivebar_linkage.urdf.xacro) and every
+Gazebo-specific element (the system plugins and the loop-closure `DetachableJoint`s) lives in
+[`fivebar_linkage.gazebo.xacro`](src/closed_loop_description/urdf/fivebar_linkage.gazebo.xacro),
+pulled in with a single `<xacro:include>`:
+
+```xml
+<robot name="fivebar_linkage" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  ...  <!-- links and joints -->
+  <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
+</robot>
+```
+
+The steps below show the pieces in the order you would add them; steps 1 to 3 go in the
+`.urdf.xacro`, steps 4 to 6 in the `.gazebo.xacro`.
 
 ### 1. Anchor the robot to the world
 
@@ -216,17 +236,26 @@ One `JointPositionController` per motor, each listening on its own `cmd_pos` top
 </gazebo>
 ```
 
-### 6. Publish joint states
+### 6. Publish joint states (active joints only)
 
-One plugin republishes every joint position so the rest of the system (TF, RViz, your nodes) can see
-the full state, including the passive joints:
+A `JointStatePublisher` plugin reports joint positions back to ROS. With no filter it publishes
+*every* joint, but to mimic real hardware (encoders on the actuated motors only; the passive joints
+are not measured) we list just the actuated joints:
 
 ```xml
 <gazebo>
   <plugin filename="libgz-sim-joint-state-publisher-system.so"
-          name="gz::sim::systems::JointStatePublisher"/>
+          name="gz::sim::systems::JointStatePublisher">
+    <joint_name>Chain1_1</joint_name>
+    <joint_name>Chain2_1</joint_name>
+  </plugin>
 </gazebo>
 ```
+
+The launch file bridges this Gazebo topic to ROS and remaps it to `/joint_states`. Recovering the
+passive joint angles from only these active readings is the forward-kinematics problem that a
+closed-loop solver such as [`joint_state_transformer`](https://github.com/HIT-Robotics/joint_state_transformer_example)
+addresses.
 
 ### 7. The Gazebo world
 
@@ -251,7 +280,8 @@ deltas) switch the solver from `pgs` to `dantzig` and shrink the step, as in `de
 ### 8. The launch file
 
 The launch file ([`fivebar_linkage.launch.py`](src/closed_loop_bringup/launch/fivebar_linkage.launch.py))
-ties it together: read the URDF into `robot_description`, set `GZ_SIM_RESOURCE_PATH` so `package://`
+ties it together: process the xacro into `robot_description` (`xacro.process_file(...).toxml()`), set
+`GZ_SIM_RESOURCE_PATH` so `package://`
 mesh paths resolve, start Gazebo with the world, spawn the model from the `robot_description` topic,
 and bridge `/clock` plus the `cmd_pos` topics with `ros_gz_bridge`:
 
@@ -261,12 +291,15 @@ Node(package="ros_gz_sim", executable="create",
      arguments=["-topic", "robot_description", "-name", "fivebar_linkage"])
 
 # bridge ROS <-> Gazebo. Syntax: <topic>@<ros_type>[<gz_type>  ('[' = gz to ros, ']' = ros to gz)
+js = "/world/fivebar_world/model/fivebar_linkage/joint_state"
 Node(package="ros_gz_bridge", executable="parameter_bridge",
      arguments=[
         "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
         "/fivebar_linkage/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
         "/fivebar_linkage/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-     ])
+        js + "@sensor_msgs/msg/JointState[gz.msgs.Model",  # active-joint encoders, gz -> ros
+     ],
+     remappings=[(js, "/joint_states")])
 ```
 
 ### For parallel robots (the deltas)

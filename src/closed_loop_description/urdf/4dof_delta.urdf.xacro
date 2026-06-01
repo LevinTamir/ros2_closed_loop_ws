@@ -1,20 +1,20 @@
 <?xml version="1.0" ?>
-<!-- 3-DoF delta (ported from PARA_ENGINEER.urdf) into the volcaniarm closed-loop pattern. -->
-<!-- Assembled home: theta=0, platform drop Z_P=0.14050 m, forearm home bend BETA=2.14001 rad. -->
-<robot name="deltaarm_3dof">
+<!-- 4-DoF delta (ported from A_00036-02.urdf) into the volcaniarm closed-loop pattern. -->
+<!-- Assembled home: theta=0, platform drop Z_P=0.7833 m, forearm home bend BETA=2.1872 rad. -->
+<robot name="deltaarm_4dof" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <link name="world"/>
   <joint name="world_to_base" type="fixed">
-    <origin xyz="0 0 1.000000" rpy="0 0 0"/>
+    <origin xyz="0 0 1.600000" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="base_link"/>
   </joint>
 
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0.025" rpy="0 0 -0.53"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Kopfplatte.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Kopfplatte.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_base">
         <color rgba="0.25 0.25 0.25 1.0"/>
@@ -23,49 +23,49 @@
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="1.0"/>
-      <inertia ixx="0.015" ixy="0" ixz="0" iyy="0.015" iyz="0" izz="0.02"/>
+      <inertia ixx="0.03" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.05"/>
     </inertial>
   </link>
 
   <!-- ===================== leg 1 (phi = 0 deg) ===================== -->
   <link name="Chain1_link_1">
     <visual>
-      <origin xyz="0 0 0" rpy="1.570 0 1.570"/>
+      <origin xyz="0 0 0" rpy="1.570 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Oberarm.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Oberarm.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_arm">
         <color rgba="0.25 0.25 0.25 1.0"/>
       </material>
     </visual>
     <inertial>
-      <origin xyz="0.0379 0 0" rpy="0 0 0"/>
-      <mass value="0.3"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.0006" iyz="0" izz="0.0006"/>
+      <origin xyz="0.19 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.006" iyz="0" izz="0.006"/>
     </inertial>
   </link>
   <joint name="Chain1_1" type="revolute">
     <parent link="base_link"/>
     <child link="Chain1_link_1"/>
-    <origin xyz="0.041700 0.000000 0" rpy="0 0 0.000000"/>
+    <origin xyz="0.250000 0.000000 0" rpy="0 0 0.000000"/>
     <axis xyz="0 1 0"/>
     <limit effort="230.0" lower="-1.0297442586766543" upper="1.4311699866353502" velocity="785.3981633974483"/>
     <dynamics damping="0.1" friction="0.0"/>
   </joint>
   <link name="Chain1_forearm">
     <visual>
-      <origin xyz="0 0 0" rpy="0 3.141 0"/>
+      <origin xyz="0 0 0" rpy="-1.570 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Unterarm.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Unterarm.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_arm">
         <color rgba="0.25 0.25 0.25 1.0"/>
       </material>
     </visual>
     <inertial>
-      <origin xyz="0.0834 0 0" rpy="0 0 0"/>
-      <mass value="0.08"/>
-      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="0.0007" iyz="0" izz="0.0007"/>
+      <origin xyz="0.48 0 0" rpy="0 0 0"/>
+      <mass value="0.15"/>
+      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.012" iyz="0" izz="0.012"/>
     </inertial>
   </link>
   <link name="Chain1_top_v1">
@@ -85,7 +85,7 @@
   <joint name="Chain1_top_A" type="revolute">
     <parent link="Chain1_link_1"/>
     <child link="Chain1_top_v1"/>
-    <origin xyz="0.075800 0 0" rpy="0 2.140009 0"/>
+    <origin xyz="0.375000 0 0" rpy="0 2.187225 0"/>
     <axis xyz="1 0 0"/>
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
@@ -116,51 +116,48 @@
   <joint name="Chain1_tip_joint" type="fixed">
     <parent link="Chain1_forearm"/>
     <child link="Chain1_tip"/>
-    <origin xyz="0.166800 0 0" rpy="0 0 0"/>
+    <origin xyz="0.960000 0 0" rpy="0 0 0"/>
   </joint>
-  <gazebo reference="Chain1_tip_joint">
-    <preserveFixedJoint>true</preserveFixedJoint>
-  </gazebo>
 
   <!-- ===================== leg 2 (phi = 120 deg) ===================== -->
   <link name="Chain2_link_1">
     <visual>
-      <origin xyz="0 0 0" rpy="1.570 0 1.570"/>
+      <origin xyz="0 0 0" rpy="1.570 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Oberarm.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Oberarm.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_arm">
         <color rgba="0.25 0.25 0.25 1.0"/>
       </material>
     </visual>
     <inertial>
-      <origin xyz="0.0379 0 0" rpy="0 0 0"/>
-      <mass value="0.3"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.0006" iyz="0" izz="0.0006"/>
+      <origin xyz="0.19 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.006" iyz="0" izz="0.006"/>
     </inertial>
   </link>
   <joint name="Chain2_1" type="revolute">
     <parent link="base_link"/>
     <child link="Chain2_link_1"/>
-    <origin xyz="-0.020850 0.036113 0" rpy="0 0 2.094395"/>
+    <origin xyz="-0.125000 0.216506 0" rpy="0 0 2.094395"/>
     <axis xyz="0 1 0"/>
     <limit effort="230.0" lower="-1.0297442586766543" upper="1.4311699866353502" velocity="785.3981633974483"/>
     <dynamics damping="0.1" friction="0.0"/>
   </joint>
   <link name="Chain2_forearm">
     <visual>
-      <origin xyz="0 0 0" rpy="0 3.141 0"/>
+      <origin xyz="0 0 0" rpy="-1.570 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Unterarm.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Unterarm.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_arm">
         <color rgba="0.25 0.25 0.25 1.0"/>
       </material>
     </visual>
     <inertial>
-      <origin xyz="0.0834 0 0" rpy="0 0 0"/>
-      <mass value="0.08"/>
-      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="0.0007" iyz="0" izz="0.0007"/>
+      <origin xyz="0.48 0 0" rpy="0 0 0"/>
+      <mass value="0.15"/>
+      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.012" iyz="0" izz="0.012"/>
     </inertial>
   </link>
   <link name="Chain2_top_v1">
@@ -180,7 +177,7 @@
   <joint name="Chain2_top_A" type="revolute">
     <parent link="Chain2_link_1"/>
     <child link="Chain2_top_v1"/>
-    <origin xyz="0.075800 0 0" rpy="0 2.140009 0"/>
+    <origin xyz="0.375000 0 0" rpy="0 2.187225 0"/>
     <axis xyz="1 0 0"/>
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
@@ -211,51 +208,48 @@
   <joint name="Chain2_tip_joint" type="fixed">
     <parent link="Chain2_forearm"/>
     <child link="Chain2_tip"/>
-    <origin xyz="0.166800 0 0" rpy="0 0 0"/>
+    <origin xyz="0.960000 0 0" rpy="0 0 0"/>
   </joint>
-  <gazebo reference="Chain2_tip_joint">
-    <preserveFixedJoint>true</preserveFixedJoint>
-  </gazebo>
 
   <!-- ===================== leg 3 (phi = 240 deg) ===================== -->
   <link name="Chain3_link_1">
     <visual>
-      <origin xyz="0 0 0" rpy="1.570 0 1.570"/>
+      <origin xyz="0 0 0" rpy="1.570 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Oberarm.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Oberarm.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_arm">
         <color rgba="0.25 0.25 0.25 1.0"/>
       </material>
     </visual>
     <inertial>
-      <origin xyz="0.0379 0 0" rpy="0 0 0"/>
-      <mass value="0.3"/>
-      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.0006" iyz="0" izz="0.0006"/>
+      <origin xyz="0.19 0 0" rpy="0 0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.006" iyz="0" izz="0.006"/>
     </inertial>
   </link>
   <joint name="Chain3_1" type="revolute">
     <parent link="base_link"/>
     <child link="Chain3_link_1"/>
-    <origin xyz="-0.020850 -0.036113 0" rpy="0 0 4.188790"/>
+    <origin xyz="-0.125000 -0.216506 0" rpy="0 0 4.188790"/>
     <axis xyz="0 1 0"/>
     <limit effort="230.0" lower="-1.0297442586766543" upper="1.4311699866353502" velocity="785.3981633974483"/>
     <dynamics damping="0.1" friction="0.0"/>
   </joint>
   <link name="Chain3_forearm">
     <visual>
-      <origin xyz="0 0 0" rpy="0 3.141 0"/>
+      <origin xyz="0 0 0" rpy="-1.570 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Unterarm.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Unterarm.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_arm">
         <color rgba="0.25 0.25 0.25 1.0"/>
       </material>
     </visual>
     <inertial>
-      <origin xyz="0.0834 0 0" rpy="0 0 0"/>
-      <mass value="0.08"/>
-      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="0.0007" iyz="0" izz="0.0007"/>
+      <origin xyz="0.48 0 0" rpy="0 0 0"/>
+      <mass value="0.15"/>
+      <inertia ixx="5e-05" ixy="0" ixz="0" iyy="0.012" iyz="0" izz="0.012"/>
     </inertial>
   </link>
   <link name="Chain3_top_v1">
@@ -275,7 +269,7 @@
   <joint name="Chain3_top_A" type="revolute">
     <parent link="Chain3_link_1"/>
     <child link="Chain3_top_v1"/>
-    <origin xyz="0.075800 0 0" rpy="0 2.140009 0"/>
+    <origin xyz="0.375000 0 0" rpy="0 2.187225 0"/>
     <axis xyz="1 0 0"/>
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
@@ -306,21 +300,18 @@
   <joint name="Chain3_tip_joint" type="fixed">
     <parent link="Chain3_forearm"/>
     <child link="Chain3_tip"/>
-    <origin xyz="0.166800 0 0" rpy="0 0 0"/>
+    <origin xyz="0.960000 0 0" rpy="0 0 0"/>
   </joint>
-  <gazebo reference="Chain3_tip_joint">
-    <preserveFixedJoint>true</preserveFixedJoint>
-  </gazebo>
 
-  <!-- ===================== moving platform (tool0) ===================== -->
-  <!-- 3 passive prismatic joints => tool0 has 3 translational DOF and stays level. -->
+  <!-- ===================== moving platform ===================== -->
+  <!-- tool_holder: 3 passive prismatic joints => 3 translational DOF, stays level -->
   <link name="tool_px"><inertial><origin xyz="0 0 0" rpy="0 0 0"/><mass value="0.01"/><inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/></inertial></link>
   <link name="tool_py"><inertial><origin xyz="0 0 0" rpy="0 0 0"/><mass value="0.01"/><inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/></inertial></link>
-  <link name="tool0">
+  <link name="tool_holder">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0.53"/>
+      <origin xyz="0 0 0.022" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://closed_loop_description/meshes/PARA_ENGINEER/Werkzeugtraeger.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Werkzeugtraeger.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="mat_tool">
         <color rgba="0.95 0.75 0.10 1.0"/>
@@ -328,16 +319,16 @@
     </visual>
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="0.3"/>
-      <inertia ixx="0.0003" ixy="0" ixz="0" iyy="0.0003" iyz="0" izz="0.0005"/>
+      <mass value="0.4"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.002"/>
     </inertial>
   </link>
   <joint name="platform_x" type="prismatic">
     <parent link="base_link"/>
     <child link="tool_px"/>
-    <origin xyz="0 0 -0.140500" rpy="0 0 0"/>
+    <origin xyz="0 0 -0.783310" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit effort="99999.0" lower="-0.5" upper="0.5" velocity="99999.0"/>
+    <limit effort="99999.0" lower="-0.7" upper="0.7" velocity="99999.0"/>
     <dynamics damping="0.5" friction="0.0"/>
   </joint>
   <joint name="platform_y" type="prismatic">
@@ -345,16 +336,178 @@
     <child link="tool_py"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit effort="99999.0" lower="-0.5" upper="0.5" velocity="99999.0"/>
+    <limit effort="99999.0" lower="-0.7" upper="0.7" velocity="99999.0"/>
     <dynamics damping="0.5" friction="0.0"/>
   </joint>
   <joint name="platform_z" type="prismatic">
     <parent link="tool_py"/>
+    <child link="tool_holder"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="99999.0" lower="-0.7" upper="0.7" velocity="99999.0"/>
+    <dynamics damping="0.5" friction="0.0"/>
+  </joint>
+  <!-- tool0: flange that rotates about z relative to the platform = actuated 4th DOF -->
+  <link name="tool0">
+    <visual>
+      <origin xyz="0 0 0.022" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Flansch.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="mat_tool">
+        <color rgba="0.95 0.75 0.10 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.2"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0008"/>
+    </inertial>
+  </link>
+  <joint name="Chain4_1" type="revolute">
+    <parent link="tool_holder"/>
     <child link="tool0"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="99999.0" lower="-0.5" upper="0.5" velocity="99999.0"/>
-    <dynamics damping="0.5" friction="0.0"/>
+    <limit effort="42.0" lower="-7.0" upper="7.0" velocity="785.0"/>
+    <dynamics damping="0.1" friction="0.0"/>
+  </joint>
+
+  <!-- ===================== central telescopic shaft (4th-axis column) ===================== -->
+  <link name="Chain4_top_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Teleskopwelle_oben.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="mat_shaft">
+        <color rgba="0.45 0.45 0.50 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.2"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0002"/>
+    </inertial>
+  </link>
+  <link name="Chain4_bottom_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://closed_loop_description/meshes/A_00036/Teleskopwelle_unten.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="mat_shaft">
+        <color rgba="0.45 0.45 0.50 1.0"/>
+      </material>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.2"/>
+      <inertia ixx="0.0005" ixy="0" ixz="0" iyy="0.0005" iyz="0" izz="0.0002"/>
+    </inertial>
+  </link>
+  <link name="Chain4_tip">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <link name="Chain4_top_v1">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <link name="Chain4_top_v2">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <joint name="Chain4_top_A" type="revolute">
+    <parent link="base_link"/>
+    <child link="Chain4_top_v1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
+    <dynamics damping="0.02" friction="0.0"/>
+  </joint>
+  <joint name="Chain4_top_B" type="revolute">
+    <parent link="Chain4_top_v1"/>
+    <child link="Chain4_top_v2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
+    <dynamics damping="0.02" friction="0.0"/>
+  </joint>
+  <joint name="Chain4_top_C" type="revolute">
+    <parent link="Chain4_top_v2"/>
+    <child link="Chain4_top_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
+    <dynamics damping="0.02" friction="0.0"/>
+  </joint>
+  <joint name="Chain4_4" type="prismatic">
+    <parent link="Chain4_top_link"/>
+    <child link="Chain4_bottom_link"/>
+    <origin xyz="0 0 -0.783310" rpy="0 0 0"/>
+    <axis xyz="0 0 -1"/>
+    <limit effort="1000.0" lower="0.0" upper="0.7" velocity="10.0"/>
+    <dynamics damping="0.2" friction="0.0"/>
+  </joint>
+  <joint name="Chain4_tip_joint" type="fixed">
+    <parent link="Chain4_bottom_link"/>
+    <child link="Chain4_tip"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="Chain4_dummy">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <link name="Chain4_cl_v1">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <link name="Chain4_cl_v2">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <joint name="Chain4_cl_A" type="revolute">
+    <parent link="tool0"/>
+    <child link="Chain4_cl_v1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
+    <dynamics damping="0.02" friction="0.0"/>
+  </joint>
+  <joint name="Chain4_cl_B" type="revolute">
+    <parent link="Chain4_cl_v1"/>
+    <child link="Chain4_cl_v2"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
+    <dynamics damping="0.02" friction="0.0"/>
+  </joint>
+  <joint name="Chain4_cl_C" type="revolute">
+    <parent link="Chain4_cl_v2"/>
+    <child link="Chain4_dummy"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
+    <dynamics damping="0.02" friction="0.0"/>
   </joint>
 
   <!-- leg 1: DetachableJoint weld -->
@@ -380,9 +533,9 @@
     </inertial>
   </link>
   <joint name="Chain1_cl_A" type="revolute">
-    <parent link="tool0"/>
+    <parent link="tool_holder"/>
     <child link="Chain1_cl_v1"/>
-    <origin xyz="0.027600 0.000000 0" rpy="0 2.140009 0.000000"/>
+    <origin xyz="0.070000 0.000000 0" rpy="0 2.187225 0.000000"/>
     <axis xyz="1 0 0"/>
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
@@ -403,14 +556,6 @@
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
   </joint>
-  <gazebo>
-    <plugin filename="libgz-sim-detachable-joint-system.so"
-            name="gz::sim::systems::DetachableJoint">
-      <parent_link>Chain1_tip</parent_link>
-      <child_model>deltaarm_3dof</child_model>
-      <child_link>Chain1_dummy</child_link>
-    </plugin>
-  </gazebo>
 
   <!-- leg 2: DetachableJoint weld -->
   <link name="Chain2_dummy">
@@ -435,9 +580,9 @@
     </inertial>
   </link>
   <joint name="Chain2_cl_A" type="revolute">
-    <parent link="tool0"/>
+    <parent link="tool_holder"/>
     <child link="Chain2_cl_v1"/>
-    <origin xyz="-0.013800 0.023902 0" rpy="0 2.140009 2.094395"/>
+    <origin xyz="-0.035000 0.060622 0" rpy="0 2.187225 2.094395"/>
     <axis xyz="1 0 0"/>
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
@@ -458,14 +603,6 @@
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
   </joint>
-  <gazebo>
-    <plugin filename="libgz-sim-detachable-joint-system.so"
-            name="gz::sim::systems::DetachableJoint">
-      <parent_link>Chain2_tip</parent_link>
-      <child_model>deltaarm_3dof</child_model>
-      <child_link>Chain2_dummy</child_link>
-    </plugin>
-  </gazebo>
 
   <!-- leg 3: DetachableJoint weld -->
   <link name="Chain3_dummy">
@@ -490,9 +627,9 @@
     </inertial>
   </link>
   <joint name="Chain3_cl_A" type="revolute">
-    <parent link="tool0"/>
+    <parent link="tool_holder"/>
     <child link="Chain3_cl_v1"/>
-    <origin xyz="-0.013800 -0.023902 0" rpy="0 2.140009 4.188790"/>
+    <origin xyz="-0.035000 -0.060622 0" rpy="0 2.187225 4.188790"/>
     <axis xyz="1 0 0"/>
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
@@ -513,63 +650,7 @@
     <limit effort="99999.0" lower="-3.141592653589793" upper="3.141592653589793" velocity="99999.0"/>
     <dynamics damping="0.02" friction="0.0"/>
   </joint>
-  <gazebo>
-    <plugin filename="libgz-sim-detachable-joint-system.so"
-            name="gz::sim::systems::DetachableJoint">
-      <parent_link>Chain3_tip</parent_link>
-      <child_model>deltaarm_3dof</child_model>
-      <child_link>Chain3_dummy</child_link>
-    </plugin>
-  </gazebo>
 
-  <!-- actuated joint controllers -->
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain1_1</joint_name>
-      <topic>/delta_3dof/Chain1_1/cmd_pos</topic>
-      <p_gain>20</p_gain>
-      <i_gain>0.5</i_gain>
-      <d_gain>3</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>50</cmd_max>
-      <cmd_min>-50</cmd_min>
-    </plugin>
-  </gazebo>
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain2_1</joint_name>
-      <topic>/delta_3dof/Chain2_1/cmd_pos</topic>
-      <p_gain>20</p_gain>
-      <i_gain>0.5</i_gain>
-      <d_gain>3</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>50</cmd_max>
-      <cmd_min>-50</cmd_min>
-    </plugin>
-  </gazebo>
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain3_1</joint_name>
-      <topic>/delta_3dof/Chain3_1/cmd_pos</topic>
-      <p_gain>20</p_gain>
-      <i_gain>0.5</i_gain>
-      <d_gain>3</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>50</cmd_max>
-      <cmd_min>-50</cmd_min>
-    </plugin>
-  </gazebo>
-
-  <!-- broadcast all joint states back to ROS2 -->
-  <gazebo>
-    <plugin filename="libgz-sim-joint-state-publisher-system.so"
-            name="gz::sim::systems::JointStatePublisher"/>
-  </gazebo>
-
+  <!-- Gazebo elements (plugins + loop closures) live in a separate macro file -->
+  <xacro:include filename="4dof_delta.gazebo.xacro"/>
 </robot>

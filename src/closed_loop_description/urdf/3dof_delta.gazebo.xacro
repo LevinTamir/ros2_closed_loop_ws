@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!-- Gazebo elements for 3dof_delta: system plugins + DetachableJoint loop closures. -->
+<!-- Included by 3dof_delta.urdf.xacro via <xacro:include>. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <gazebo reference="Chain1_tip_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="Chain2_tip_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="Chain3_tip_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgz-sim-detachable-joint-system.so"
+            name="gz::sim::systems::DetachableJoint">
+      <parent_link>Chain1_tip</parent_link>
+      <child_model>deltaarm_3dof</child_model>
+      <child_link>Chain1_dummy</child_link>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgz-sim-detachable-joint-system.so"
+            name="gz::sim::systems::DetachableJoint">
+      <parent_link>Chain2_tip</parent_link>
+      <child_model>deltaarm_3dof</child_model>
+      <child_link>Chain2_dummy</child_link>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgz-sim-detachable-joint-system.so"
+            name="gz::sim::systems::DetachableJoint">
+      <parent_link>Chain3_tip</parent_link>
+      <child_model>deltaarm_3dof</child_model>
+      <child_link>Chain3_dummy</child_link>
+    </plugin>
+  </gazebo>
+
+  <!-- actuated joint controllers -->
+  <gazebo>
+    <plugin filename="libgz-sim-joint-position-controller-system.so"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>Chain1_1</joint_name>
+      <topic>/delta_3dof/Chain1_1/cmd_pos</topic>
+      <p_gain>20</p_gain>
+      <i_gain>0.5</i_gain>
+      <d_gain>3</d_gain>
+      <i_max>5</i_max>
+      <i_min>-5</i_min>
+      <cmd_max>50</cmd_max>
+      <cmd_min>-50</cmd_min>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgz-sim-joint-position-controller-system.so"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>Chain2_1</joint_name>
+      <topic>/delta_3dof/Chain2_1/cmd_pos</topic>
+      <p_gain>20</p_gain>
+      <i_gain>0.5</i_gain>
+      <d_gain>3</d_gain>
+      <i_max>5</i_max>
+      <i_min>-5</i_min>
+      <cmd_max>50</cmd_max>
+      <cmd_min>-50</cmd_min>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgz-sim-joint-position-controller-system.so"
+            name="gz::sim::systems::JointPositionController">
+      <joint_name>Chain3_1</joint_name>
+      <topic>/delta_3dof/Chain3_1/cmd_pos</topic>
+      <p_gain>20</p_gain>
+      <i_gain>0.5</i_gain>
+      <d_gain>3</d_gain>
+      <i_max>5</i_max>
+      <i_min>-5</i_min>
+      <cmd_max>50</cmd_max>
+      <cmd_min>-50</cmd_min>
+    </plugin>
+  </gazebo>
+
+  <!-- broadcast all joint states back to ROS2 -->
+  <gazebo>
+    <plugin filename="libgz-sim-joint-state-publisher-system.so"
+            name="gz::sim::systems::JointStatePublisher">
+      <!-- publish ONLY the actuated joints, to mimic real encoders;
+           the passive joints are not measured on real hardware -->
+      <joint_name>Chain1_1</joint_name>
+      <joint_name>Chain2_1</joint_name>
+      <joint_name>Chain3_1</joint_name>
+    </plugin>
+  </gazebo>
+
+</robot>

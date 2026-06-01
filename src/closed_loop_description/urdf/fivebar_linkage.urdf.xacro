@@ -3,7 +3,7 @@
      Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
 <robot
-  name="fivebar_linkage">
+  name="fivebar_linkage" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- World frame: base_link (the linkage mount) is fixed ~0.96 m above the ground -->
   <link name="world"/>
   <joint name="world_to_base" type="fixed">
@@ -339,10 +339,6 @@
     <parent link="Chain2_link_2" />
     <child link="Chain2_tip" />
   </joint>
-  <!-- Prevent Gazebo from merging this fixed joint so DetachableJoint can find the link -->
-  <gazebo reference="Chain2_tip_joint">
-    <preserveFixedJoint>true</preserveFixedJoint>
-  </gazebo>
 
   <!-- Closure dummy link: URDF-tree leaf on the left arm, DetachableJoint target -->
   <link name="Chain1_dummy">
@@ -382,14 +378,6 @@
        parent = Chain2_tip  (right chain leaf)
        child  = Chain1_dummy  (left chain leaf)
        Both frames are coincident at q=0, so no snap/impulse at attach time. -->
-  <gazebo>
-    <plugin filename="libgz-sim-detachable-joint-system.so"
-            name="gz::sim::systems::DetachableJoint">
-      <parent_link>Chain2_tip</parent_link>
-      <child_model>fivebar_linkage</child_model>
-      <child_link>Chain1_dummy</child_link>
-    </plugin>
-  </gazebo>
 
   <!-- ===================================================================
        JOINT POSITION CONTROLLERS
@@ -400,40 +388,6 @@
          - Chain1_2, Chain2_2, Chain1_closure
        =================================================================== -->
 
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain1_1</joint_name>
-      <topic>/fivebar_linkage/Chain1_1/cmd_pos</topic>
-      <p_gain>10</p_gain>
-      <i_gain>1</i_gain>
-      <d_gain>1</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>10</cmd_max>
-      <cmd_min>-10</cmd_min>
-    </plugin>
-  </gazebo>
-
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain2_1</joint_name>
-      <topic>/fivebar_linkage/Chain2_1/cmd_pos</topic>
-      <p_gain>10</p_gain>
-      <i_gain>1</i_gain>
-      <d_gain>1</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>10</cmd_max>
-      <cmd_min>-10</cmd_min>
-    </plugin>
-  </gazebo>
-
-  <!-- Joint state publisher: broadcasts all joint positions back to ROS2 -->
-  <gazebo>
-    <plugin filename="libgz-sim-joint-state-publisher-system.so"
-            name="gz::sim::systems::JointStatePublisher"/>
-  </gazebo>
-
+  <!-- Gazebo elements (plugins + loop closures) live in a separate macro file -->
+  <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
 </robot>

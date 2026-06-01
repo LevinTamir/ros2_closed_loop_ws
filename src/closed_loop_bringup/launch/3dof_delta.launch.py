@@ -15,6 +15,7 @@ from launch.substitutions import (
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+import xacro
 
 
 def generate_launch_description():
@@ -22,7 +23,7 @@ def generate_launch_description():
 
     model_arg = DeclareLaunchArgument(
         name="model",
-        default_value=os.path.join(closed_loop_description, "urdf", "3dof_delta.urdf"),
+        default_value=os.path.join(closed_loop_description, "urdf", "3dof_delta.urdf.xacro"),
         description="Absolute path to robot urdf file",
     )
 
@@ -43,8 +44,9 @@ def generate_launch_description():
 
     gazebo_resource_path = SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", model_path)
 
-    with open(os.path.join(closed_loop_description, "urdf", "3dof_delta.urdf"), "r") as f:
-        robot_description_content = f.read()
+    robot_description_content = xacro.process_file(
+        os.path.join(closed_loop_description, "urdf", "3dof_delta.urdf.xacro")
+    ).toxml()
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
@@ -76,6 +78,10 @@ def generate_launch_description():
         ],
     )
 
+    # Gazebo publishes only the actuated joints (the URDF JointStatePublisher is filtered),
+    # mimicking real encoders. Bridge that back to ROS and remap it to /joint_states.
+    gz_joint_state_topic = "/world/delta_world/model/deltaarm_3dof/joint_state"
+
     gz_ros2_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -84,7 +90,9 @@ def generate_launch_description():
             "/delta_3dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
             "/delta_3dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
             "/delta_3dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            gz_joint_state_topic + "@sensor_msgs/msg/JointState[gz.msgs.Model",
         ],
+        remappings=[(gz_joint_state_topic, "/joint_states")],
     )
 
     return LaunchDescription(
