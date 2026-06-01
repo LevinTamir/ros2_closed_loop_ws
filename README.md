@@ -1,11 +1,13 @@
-# ROS2 Closed-Loop Kinematics Workspace
+# ROS 2 Closed-Loop Kinematics Workspace
 
 A test bed for modeling and simulating robots with **closed kinematic chains** in the new Gazebo
-simulator (Gazebo Harmonic) with ROS 2. Plain URDF can only describe open kinematic *trees*; this
-repo shows a clean, repeatable way to close loops at runtime using Gazebo's `DetachableJoint`
-system plugin, and applies it to three robots of increasing complexity.
+simulator (Gazebo Harmonic) with ROS 2. Plain URDF can only describe open kinematic *trees*, so this
+repo shows a clean, repeatable way to close loops at runtime using Gazebo's `DetachableJoint` system
+plugin, and applies it to three robots of increasing complexity.
 
-Everything lives in a single package, [`delta_arms_description`](src/delta_arms_description):
+It is split into two packages: [`closed_loop_description`](src/closed_loop_description) holds the
+robot models (URDFs, Gazebo worlds, meshes) and [`closed_loop_bringup`](src/closed_loop_bringup)
+holds the launch files that start them.
 
 | Example | What it is | Launch |
 |---|---|---|
@@ -19,7 +21,7 @@ Everything lives in a single package, [`delta_arms_description`](src/delta_arms_
   <img src=".media/4dof_delta_gazebo.png" alt="4-DoF delta in Gazebo" width="32%">
 </p>
 
-The 5-bar is the reference example: it is the simplest closed loop, and the
+The 5-bar is the reference example. It is the simplest closed loop, and the
 [implementation guide](#implementation-guide-adapting-your-own-robot) below walks through exactly how
 its URDF, world, and launch file are wired up. The two deltas reuse the same pattern.
 
@@ -46,12 +48,12 @@ Open two terminals: one runs the simulation, the other sends joint commands (pos
 ### 5-bar linkage (the reference example)
 
 ```bash
-# terminal 1 — simulation
-ros2 launch delta_arms_description fivebar_linkage.launch.py
+# terminal 1: simulation
+ros2 launch closed_loop_bringup fivebar_linkage.launch.py
 ```
 
 ```bash
-# terminal 2 — the two motors (Chain1_1 = left, Chain2_1 = right)
+# terminal 2: the two motors (Chain1_1 = left, Chain2_1 = right)
 ros2 topic pub -1 /fivebar_linkage/Chain1_1/cmd_pos std_msgs/msg/Float64 "{data: 0.3}"
 ros2 topic pub -1 /fivebar_linkage/Chain2_1/cmd_pos std_msgs/msg/Float64 "{data: -0.3}"
 ```
@@ -59,12 +61,12 @@ ros2 topic pub -1 /fivebar_linkage/Chain2_1/cmd_pos std_msgs/msg/Float64 "{data:
 ### 3-DoF delta
 
 ```bash
-ros2 launch delta_arms_description 3dof_delta.launch.py
+ros2 launch closed_loop_bringup 3dof_delta.launch.py
 ```
 
 ```bash
 # equal angles on all three arms move the platform up/down; unequal angles move it
-# sideways — the platform always stays level
+# sideways. The platform always stays level.
 ros2 topic pub -1 /delta_3dof/Chain1_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
 ros2 topic pub -1 /delta_3dof/Chain2_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
 ros2 topic pub -1 /delta_3dof/Chain3_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}"
@@ -73,7 +75,7 @@ ros2 topic pub -1 /delta_3dof/Chain3_1/cmd_pos std_msgs/msg/Float64 "{data: 0.4}
 ### 4-DoF delta
 
 ```bash
-ros2 launch delta_arms_description 4dof_delta.launch.py
+ros2 launch closed_loop_bringup 4dof_delta.launch.py
 ```
 
 ```bash
@@ -88,61 +90,60 @@ ros2 topic pub -1 /delta_4dof/Chain4_1/cmd_pos std_msgs/msg/Float64 "{data: 1.0}
 ## Repository structure
 
 ```
-delta_arms_description/
-├── urdf/
-│   ├── fivebar_linkage.urdf      # hand-written 5-bar (reference example)
-│   ├── 3dof_delta.urdf           # generated — do not edit by hand
-│   └── 4dof_delta.urdf           # generated — do not edit by hand
-├── launch/
-│   ├── fivebar_linkage.launch.py # one launch file per robot (same structure)
-│   ├── 3dof_delta.launch.py
-│   └── 4dof_delta.launch.py
-├── worlds/
-│   ├── fivebar_world.sdf         # DART physics world for the 5-bar
-│   └── delta_world.sdf           # DART world for the deltas (dantzig solver)
-├── meshes/
-│   ├── fivebar_linkage/          # one mesh folder per robot
-│   ├── PARA_ENGINEER/            # 3-DoF delta meshes
-│   └── A_00036/                  # 4-DoF delta meshes
-├── scripts/
-│   ├── gen_delta_3dof.py         # generators that emit the delta URDFs
-│   └── gen_delta_4dof.py
-├── CMakeLists.txt                # installs launch/ meshes/ urdf/ worlds/
-└── package.xml
+src/
+├── closed_loop_description/        # robot models: what the robots are
+│   ├── urdf/
+│   │   ├── fivebar_linkage.urdf
+│   │   ├── 3dof_delta.urdf
+│   │   └── 4dof_delta.urdf
+│   ├── worlds/
+│   │   ├── fivebar_world.sdf        # DART physics world for the 5-bar
+│   │   └── delta_world.sdf          # DART world for the deltas (dantzig solver)
+│   ├── meshes/                      # one folder per robot
+│   │   ├── fivebar_linkage/
+│   │   ├── PARA_ENGINEER/           # 3-DoF delta meshes
+│   │   └── A_00036/                 # 4-DoF delta meshes
+│   ├── CMakeLists.txt
+│   └── package.xml
+└── closed_loop_bringup/            # launch files: how to start them
+    ├── launch/
+    │   ├── fivebar_linkage.launch.py
+    │   ├── 3dof_delta.launch.py
+    │   └── 4dof_delta.launch.py
+    ├── CMakeLists.txt
+    └── package.xml
 ```
 
 ## How the closed loops are modeled
 
-A URDF is a *tree* — every link has exactly one parent — so it cannot, on its own, express a loop.
+A URDF is a *tree* (every link has exactly one parent), so it cannot, on its own, express a loop.
 The loop is instead closed **at runtime** by Gazebo's `DetachableJoint` plugin, which welds two links
 together once the model is spawned. The trick that makes this clean is to arrange the two welded
-links so their frames are **coincident at the robot's assembled "home" pose**; the weld then attaches
+links so their frames are **coincident at the robot's assembled "home" pose**, so the weld attaches
 with no snap or impulse. Actuated joints are driven by `JointPositionController` plugins over
 `cmd_pos` topics, and all joint states are republished by a `JointStatePublisher` plugin.
 
-The two deltas extend this: each forearm rod is given a ball joint at each end (a `DetachableJoint`
+The two deltas extend this. Each forearm rod is given a ball joint at each end (a `DetachableJoint`
 weld plus a 3-revolute "spherical" chain reproduces the source `spherical_joint` constraints), and
 the moving platform hangs from a passive 3-prismatic X-Y-Z chain so it keeps exactly 3 translational
-DOF and stays level by construction. Because the delta geometry is repetitive, their URDFs are
-produced by the generators in [`scripts/`](src/delta_arms_description/scripts) rather than written by
-hand.
+DOF and stays level by construction.
 
 ## Implementation guide: adapting your own robot
 
 This is the recipe for turning an ordinary URDF into a closed-loop Gazebo model, illustrated with the
-**5-bar linkage** ([`urdf/fivebar_linkage.urdf`](src/delta_arms_description/urdf/fivebar_linkage.urdf)).
-A 5-bar has two serial arms (`Chain1` = left, `Chain2` = right) whose tips must meet — that meeting
-point is the loop to close.
+**5-bar linkage** ([`fivebar_linkage.urdf`](src/closed_loop_description/urdf/fivebar_linkage.urdf)).
+A 5-bar has two serial arms (`Chain1` = left, `Chain2` = right) whose tips must meet, and that
+meeting point is the loop to close.
 
 ### 1. Anchor the robot to the world
 
-Add a `world` link and a fixed joint that places the base. (Here the base sits 0.98 m up so the arm
-hangs in front of it.)
+Add a `world` link and a fixed joint that places the base. (Here the base sits about 0.96 m up so the
+arm hangs below it.)
 
 ```xml
 <link name="world"/>
 <joint name="world_to_base" type="fixed">
-  <origin xyz="0 0 0.98" rpy="0 0 3.14159"/>
+  <origin xyz="0.218 0 0.96" rpy="0 3.14159 0"/>
   <parent link="world"/>
   <child link="base_link"/>
 </joint>
@@ -152,7 +153,7 @@ hangs in front of it.)
 
 Keep the kinematics as a normal open tree. On the chain that will be the *parent* of the weld, add a
 tiny massless link fixed exactly at the physical closure point. Tell Gazebo **not** to merge this
-fixed joint away, otherwise the link disappears and the plugin can't find it:
+fixed joint away, otherwise the link disappears and the plugin cannot find it:
 
 ```xml
 <joint name="Chain2_tip_joint" type="fixed">
@@ -185,8 +186,8 @@ the two frames:
 ### 4. Close the loop with a DetachableJoint
 
 A single plugin welds the two leaves. `child_model` **must equal the name the robot is spawned with**
-(see the launch file). Because the frames coincide at home, the weld is an identity transform — no
-snap:
+(see the launch file). Because the frames coincide at home, the weld is an identity transform, so
+there is no snap:
 
 ```xml
 <gazebo>
@@ -229,9 +230,9 @@ the full state, including the passive joints:
 
 ### 7. The Gazebo world
 
-Closed loops are stiff, so the world ([`worlds/fivebar_world.sdf`](src/delta_arms_description/worlds/fivebar_world.sdf))
+Closed loops are stiff, so the world ([`fivebar_world.sdf`](src/closed_loop_description/worlds/fivebar_world.sdf))
 selects the **DART** physics engine and loads the standard system plugins. For tougher loops (the
-deltas) switch the solver from `pgs` to `dantzig` and shrink the step — see `delta_world.sdf`:
+deltas) switch the solver from `pgs` to `dantzig` and shrink the step, as in `delta_world.sdf`:
 
 ```xml
 <physics name="1ms" type="dart">
@@ -249,17 +250,17 @@ deltas) switch the solver from `pgs` to `dantzig` and shrink the step — see `d
 
 ### 8. The launch file
 
-The launch file ([`launch/fivebar_linkage.launch.py`](src/delta_arms_description/launch/fivebar_linkage.launch.py))
+The launch file ([`fivebar_linkage.launch.py`](src/closed_loop_bringup/launch/fivebar_linkage.launch.py))
 ties it together: read the URDF into `robot_description`, set `GZ_SIM_RESOURCE_PATH` so `package://`
 mesh paths resolve, start Gazebo with the world, spawn the model from the `robot_description` topic,
 and bridge `/clock` plus the `cmd_pos` topics with `ros_gz_bridge`:
 
 ```python
-# spawn the model — the -name MUST match <child_model> in the DetachableJoint
+# spawn the model. The -name MUST match <child_model> in the DetachableJoint
 Node(package="ros_gz_sim", executable="create",
      arguments=["-topic", "robot_description", "-name", "fivebar_linkage"])
 
-# bridge ROS <-> Gazebo. Syntax: <topic>@<ros_type>[<gz_type>  ('[' = gz->ros, ']' = ros->gz)
+# bridge ROS <-> Gazebo. Syntax: <topic>@<ros_type>[<gz_type>  ('[' = gz to ros, ']' = ros to gz)
 Node(package="ros_gz_bridge", executable="parameter_bridge",
      arguments=[
         "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
@@ -270,18 +271,16 @@ Node(package="ros_gz_bridge", executable="parameter_bridge",
 
 ### For parallel robots (the deltas)
 
-The deltas apply steps 1–8 per leg, but each forearm rod uses a **ball joint at both ends** (a
-`DetachableJoint` weld plus a 3-revolute spherical chain) instead of a single revolute, and the moving
-platform hangs from a **passive 3-prismatic X-Y-Z chain** so it keeps 3 translational DOF and stays
-level. The repetitive geometry — and the home pose that makes every weld coincident — is computed and
-emitted by [`scripts/gen_delta_3dof.py`](src/delta_arms_description/scripts/gen_delta_3dof.py) and
-[`gen_delta_4dof.py`](src/delta_arms_description/scripts/gen_delta_4dof.py); re-run them to regenerate
-the URDFs after changing dimensions.
+The deltas apply steps 1 to 8 per leg, but each forearm rod uses a **ball joint at both ends** (a
+`DetachableJoint` weld plus a 3-revolute spherical chain) instead of a single revolute, and the
+moving platform hangs from a **passive 3-prismatic X-Y-Z chain** so it keeps 3 translational DOF and
+stays level. As with the 5-bar, the assembled home pose is chosen so every weld is coincident at
+spawn, which gives a clean zero-impulse attach.
 
 ## Acknowledgements
 
 - [ros2_closed_loop_demo](https://github.com/wiartallajan/ros2_closed_loop_demo)
 - [gz_attach_links](https://github.com/oKermorgant/gz_attach_links)
-- [joint_state_transformer_example](https://github.com/HIT-Robotics/joint_state_transformer_example)
-  — source of the delta robot descriptions (Heilbronn University of Applied Sciences, supported by
+- [joint_state_transformer_example](https://github.com/HIT-Robotics/joint_state_transformer_example):
+  source of the delta robot descriptions (Heilbronn University of Applied Sciences, supported by
   Autonox robotics GmbH).

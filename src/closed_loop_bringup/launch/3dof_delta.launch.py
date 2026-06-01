@@ -18,11 +18,11 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    delta_arms_description = get_package_share_directory("delta_arms_description")
+    closed_loop_description = get_package_share_directory("closed_loop_description")
 
     model_arg = DeclareLaunchArgument(
         name="model",
-        default_value=os.path.join(delta_arms_description, "urdf", "4dof_delta.urdf"),
+        default_value=os.path.join(closed_loop_description, "urdf", "3dof_delta.urdf"),
         description="Absolute path to robot urdf file",
     )
 
@@ -30,7 +30,7 @@ def generate_launch_description():
 
     world_path = PathJoinSubstitution(
         [
-            delta_arms_description,
+            closed_loop_description,
             "worlds",
             PythonExpression(
                 expression=["'", LaunchConfiguration("world_name"), "'", " + '.sdf'"]
@@ -38,12 +38,12 @@ def generate_launch_description():
         ]
     )
 
-    model_path = str(Path(delta_arms_description).parent.resolve())
-    model_path += pathsep + os.path.join(delta_arms_description, "meshes")
+    model_path = str(Path(closed_loop_description).parent.resolve())
+    model_path += pathsep + os.path.join(closed_loop_description, "meshes")
 
     gazebo_resource_path = SetEnvironmentVariable("GZ_SIM_RESOURCE_PATH", model_path)
 
-    with open(os.path.join(delta_arms_description, "urdf", "4dof_delta.urdf"), "r") as f:
+    with open(os.path.join(closed_loop_description, "urdf", "3dof_delta.urdf"), "r") as f:
         robot_description_content = f.read()
 
     robot_state_publisher_node = Node(
@@ -72,7 +72,7 @@ def generate_launch_description():
             "-topic",
             "robot_description",
             "-name",
-            "deltaarm_4dof",
+            "deltaarm_3dof",
         ],
     )
 
@@ -81,10 +81,9 @@ def generate_launch_description():
         executable="parameter_bridge",
         arguments=[
             "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-            "/delta_4dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/delta_4dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/delta_4dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
-            "/delta_4dof/Chain4_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_3dof/Chain1_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_3dof/Chain2_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
+            "/delta_3dof/Chain3_1/cmd_pos@std_msgs/msg/Float64]gz.msgs.Double",
         ],
     )
 

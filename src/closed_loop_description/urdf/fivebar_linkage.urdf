@@ -34,7 +34,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/base_link.STL" />
       </geometry>
       <material
         name="">
@@ -48,7 +48,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/base_link.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -74,7 +74,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_1.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain1_link_1.STL" />
       </geometry>
       <material
         name="">
@@ -88,7 +88,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_1.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain1_link_1.STL" />
       </geometry>
     </collision>
   </link>
@@ -135,7 +135,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_2.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain1_link_2.STL" />
       </geometry>
       <material
         name="">
@@ -149,7 +149,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain1_link_2.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain1_link_2.STL" />
       </geometry>
     </collision>
   </link>
@@ -196,7 +196,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_1.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain2_link_1.STL" />
       </geometry>
       <material
         name="">
@@ -210,7 +210,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_1.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain2_link_1.STL" />
       </geometry>
     </collision>
   </link>
@@ -257,7 +257,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_2.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain2_link_2.STL" />
       </geometry>
       <material
         name="">
@@ -271,7 +271,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://delta_arms_description/meshes/fivebar_linkage/Chain2_link_2.STL" />
+          filename="package://closed_loop_description/meshes/fivebar_linkage/Chain2_link_2.STL" />
       </geometry>
     </collision>
   </link>

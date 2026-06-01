@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
-project(delta_arms_description)
+project(closed_loop_bringup)
 
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY launch meshes urdf worlds
+  DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
