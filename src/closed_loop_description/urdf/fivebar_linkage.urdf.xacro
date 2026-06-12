@@ -39,7 +39,7 @@
       <material
         name="">
         <color
-          rgba="0.25 0.25 0.25 1.0" />
+          rgba="0.75 0.78 0.82 1.0" />
       </material>
     </visual>
     <collision>
@@ -79,7 +79,7 @@
       <material
         name="">
         <color
-          rgba="0.25 0.25 0.25 1.0" />
+          rgba="0.75 0.78 0.82 1.0" />
       </material>
     </visual>
     <collision>
@@ -140,7 +140,7 @@
       <material
         name="">
         <color
-          rgba="0.25 0.25 0.25 1.0" />
+          rgba="0.75 0.78 0.82 1.0" />
       </material>
     </visual>
     <collision>
@@ -201,7 +201,7 @@
       <material
         name="">
         <color
-          rgba="0.25 0.25 0.25 1.0" />
+          rgba="0.75 0.78 0.82 1.0" />
       </material>
     </visual>
     <collision>
@@ -262,7 +262,7 @@
       <material
         name="">
         <color
-          rgba="0.25 0.25 0.25 1.0" />
+          rgba="0.75 0.78 0.82 1.0" />
       </material>
     </visual>
     <collision>
@@ -298,102 +298,49 @@
   </joint>
 
   <!-- ===================================================================
-       5-BAR LINKAGE CLOSURE
-       FK at q=0 (all revolute joints at zero):
-         Cumulative Rx to left arm link  : 2.2217 rad
-         Cumulative Rx to right arm link : -2.2217 rad  (mirror)
+       5-BAR LINKAGE CLOSURE  (FK reference at q=0, all revolute joints zero)
          Left arm origin in base_link    : (0.071,  0.4953, -0.3918)
          Right arm origin in base_link   : (0.075, -0.4953, -0.3918)
-         Arm z-axis (left)  in base_link : [0, -0.7956, -0.6059]
-         Arm z-axis (right) in base_link : [0, +0.7956, -0.6059]
-         Tip length L = 0.4953/0.7956   = 0.6225 m  (left arm CoM at L/2 = 0.311 m confirms)
-         Closure point in base_link      : (~0.073, 0, -0.769)
-         Chain1_closure rpy_r = 4.0615 - 2.2217 = 1.8398 rad  (aligns dummy with right tip frame)
+         Tip length L = 0.4953/0.7956   = 0.6225 m
+         Closure point in base_link      : (~0.073, 0, -0.769)   <- X_EE_PLANE = 0.073
+       The two distal links (Chain1_link_2, Chain2_link_2) meet at this closure point.
+       HOW THE LOOP IS CLOSED depends on the render (see flag-gated includes below):
+         - Gazebo  (sim):         DetachableJoint weld + helper frames (fivebar_linkage.gazebo.xacro)
+         - robot_model (constraints): two spherical <constraint>s to tool0 (fivebar_linkage.constraints.xacro)
+         - MoveIt  (planning):    phantom tool chain only          (fivebar_linkage.moveit.xacro)
+       The base tree above is shared by all renders and stays parser-agnostic.
        =================================================================== -->
-
-  <!-- Massless tip frame fixed to the right arm at the physical closure point -->
-  <link name="Chain2_tip">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.001" />
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <sphere radius="0.008" />
-      </geometry>
-      <material name="tip_green">
-        <color rgba="0.95 0.75 0.10 1.0" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <sphere radius="0.008" />
-      </geometry>
-    </collision>
-  </link>
-  <joint name="Chain2_tip_joint" type="fixed">
-    <origin xyz="0 0 0.6225" rpy="0 0 0" />
-    <parent link="Chain2_link_2" />
-    <child link="Chain2_tip" />
-  </joint>
-
-  <!-- Closure dummy link: URDF-tree leaf on the left arm, DetachableJoint target -->
-  <link name="Chain1_dummy">
-    <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <mass value="0.001" />
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <sphere radius="0.008" />
-      </geometry>
-      <material name="closure_purple">
-        <color rgba="0.95 0.75 0.10 1.0" />
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <sphere radius="0.008" />
-      </geometry>
-    </collision>
-  </link>
-  <!-- rpy=(1.8398,0,0) rotates Chain1_dummy so its world frame matches
-       Chain2_tip at q=0 → DetachableJoint locks with zero relative rotation -->
-  <joint name="Chain1_closure" type="revolute">
-    <origin xyz="0 0 0.6225" rpy="1.8398 0 0" />
-    <parent link="Chain1_link_2" />
-    <child link="Chain1_dummy" />
-    <axis xyz="1 0 0" />
-    <limit lower="-3.14" upper="3.14" effort="0" velocity="10" />
-    <dynamics damping="0.1" friction="0.0" />
-  </joint>
-
-  <!-- DetachableJoint: auto-attaches at launch, closing the 5-bar loop.
-       parent = Chain2_tip  (right chain leaf)
-       child  = Chain1_dummy  (left chain leaf)
-       Both frames are coincident at q=0, so no snap/impulse at attach time. -->
 
   <!-- ===================================================================
-       JOINT POSITION CONTROLLERS
-       Actuated joints of the 5-bar linkage:
-         - Chain1_1   (motor 1)
-         - Chain2_1  (motor 2)
-       Passive joints are driven by the linkage constraint:
-         - Chain1_2, Chain2_2, Chain1_closure
+       Single source of truth: one kinematic tree, four orthogonal add-on renders,
+       each gated by its own arg and split into its own macro file (mirrors the
+       existing sim/gazebo split). Each launch context renders with the flags it needs:
+         Gazebo:      sim:=true ros2_control:=true
+         MoveIt:      planning:=true
+         transformer: planning:=true constraints:=true   (constraints need tool0 from the phantom chain)
        =================================================================== -->
+  <xacro:arg name="sim"          default="true"/>
+  <xacro:arg name="ros2_control" default="false"/>
+  <xacro:arg name="planning"     default="false"/>
+  <xacro:arg name="constraints"  default="false"/>
 
-  <!-- Sim vs. real separation: the kinematics above are shared by both. The Gazebo
-       system plugins and DetachableJoint loop closures are simulation-only, so they live
-       in a separate file included only when sim:=true. For real-hardware bringup
-       (sim:=false) a fivebar_linkage.ros2_control.xacro will be included here instead (added later). -->
-  <xacro:arg name="sim" default="true"/>
+  <!-- Gazebo system plugins + DetachableJoint loop closure (+ closure helper frames) -->
   <xacro:if value="$(arg sim)">
     <xacro:include filename="fivebar_linkage.gazebo.xacro"/>
+  </xacro:if>
+
+  <!-- ros2_control hardware interface on the active joints (gz_ros2_control in sim) -->
+  <xacro:if value="$(arg ros2_control)">
+    <xacro:include filename="fivebar_linkage.ros2_control.xacro"/>
+  </xacro:if>
+
+  <!-- MoveIt phantom planning chain to tool0 -->
+  <xacro:if value="$(arg planning)">
+    <xacro:include filename="fivebar_linkage.moveit.xacro"/>
+  </xacro:if>
+
+  <!-- Closed-loop <constraint> elements + transmissions for robot_model -->
+  <xacro:if value="$(arg constraints)">
+    <xacro:include filename="fivebar_linkage.constraints.xacro"/>
   </xacro:if>
 </robot>

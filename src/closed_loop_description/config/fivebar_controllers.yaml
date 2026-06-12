@@ -1,0 +1,27 @@
+# ros2_control controllers for the fivebar_linkage active joints, run by gz_ros2_control.
+# - joint_state_broadcaster: publishes the measured ACTIVE joint states. Remapped in the launch
+#   to /active_joint_states so it does not collide with the full /joint_states the transformer
+#   republishes (which would otherwise form a feedback loop).
+# - actuated_joint_trajectory_controller: receives the motor trajectory from the
+#   joint_state_transformer (which MoveIt drives) and commands the two motors.
+controller_manager:
+  ros__parameters:
+    update_rate: 200  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    actuated_joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+actuated_joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - Chain1_1
+      - Chain2_1
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    allow_nonzero_velocity_at_trajectory_end: true

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!-- Closed-loop constraint extras for fivebar_linkage (gated by constraints:=true).
+     Consumed by robot_model / the joint_state_transformer node (NOT by Gazebo or MoveIt).
+     These <constraint> elements are a HIT-Robotics urdfdom-fork extension; standard parsers
+     ignore them. Requires the phantom tool chain (planning:=true) because the constraints
+     tie each leg to the end-effector link `tool0`. So the transformer render is:
+         xacro ... sim:=false planning:=true constraints:=true
+
+     - <transmission> marks the two motors as ACTIVE (robot_model classifies a joint active
+       iff it carries a transmission); the remaining revolutes (Chain1_2, Chain2_2) are passive.
+     - Each spherical constraint forces an arm tip to coincide with the EE point tool0,
+       closing the 5-bar loop through the platform (the same role the DetachableJoint plays in
+       Gazebo and the spherical constraints play for the reference delta). -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <transmission name="Chain1_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain1_1"/>
+    <actuator name="Chain1_actuator">
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="Chain2_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain2_1"/>
+    <actuator name="Chain2_actuator">
+      <mechanicalReduction>1.0</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <!-- Left-arm tip (Chain1_link_2 + 0.6225 along its z) coincides with tool0 -->
+  <constraint name="Chain1_ee_constraint" type="spherical_joint">
+    <parent link="Chain1_link_2"/>
+    <parent_origin xyz="0 0 0.6225" rpy="0 0 0"/>
+    <child link="tool0"/>
+    <child_origin xyz="0 0 0" rpy="0 0 0"/>
+  </constraint>
+
+  <!-- Right-arm tip coincides with tool0. parent_origin x=-0.004 shifts the right tip from
+       its native x=0.293 to the left tip's x=0.289 (= X_EE_PLANE), removing the 4 mm URDF
+       export asymmetry so the loop closes exactly (x is invariant under the x-parallel joints). -->
+  <constraint name="Chain2_ee_constraint" type="spherical_joint">
+    <parent link="Chain2_link_2"/>
+    <parent_origin xyz="-0.004 0 0.6225" rpy="0 0 0"/>
+    <child link="tool0"/>
+    <child_origin xyz="0 0 0" rpy="0 0 0"/>
+  </constraint>
+
+</robot>

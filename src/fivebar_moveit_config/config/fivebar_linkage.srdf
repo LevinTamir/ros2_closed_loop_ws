@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Semantic description for MoveIt planning of the fivebar_linkage.
+     MoveIt plans the OPEN phantom chain (base_link -> tool0 via tool_joint_y/z); the
+     joint_state_transformer node converts the planned tool pose into the real motor angles.
+     The four leg joints are declared passive (MoveIt does not command them directly). -->
+<robot name="fivebar_linkage">
+
+    <!-- Planning group: the 2-DOF phantom chain positioning the end-effector point tool0 -->
+    <group name="ee">
+        <chain base_link="base_link" tip_link="tool0"/>
+    </group>
+
+    <!-- Home = the q=0 assembly of the linkage. The phantom origins are offset so home is at
+         tool_joint_y=tool_joint_z=0 (EE displacement from home), so the default state is home. -->
+    <group_state name="home" group="ee">
+        <joint name="tool_joint_y" value="0.0"/>
+        <joint name="tool_joint_z" value="0.0"/>
+    </group_state>
+
+    <!-- The real linkage joints are driven by the loop closure, not commanded by MoveIt -->
+    <passive_joint name="Chain1_1"/>
+    <passive_joint name="Chain1_2"/>
+    <passive_joint name="Chain2_1"/>
+    <passive_joint name="Chain2_2"/>
+
+    <!-- Collisions: the leg links are static during phantom planning; disable the loop's
+         link pairs so the permanently-closed mechanism is not reported as self-colliding. -->
+    <disable_collisions link1="base_link" link2="Chain1_link_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="Chain2_link_1" reason="Adjacent"/>
+    <disable_collisions link1="Chain1_link_1" link2="Chain1_link_2" reason="Adjacent"/>
+    <disable_collisions link1="Chain2_link_1" link2="Chain2_link_2" reason="Adjacent"/>
+    <disable_collisions link1="Chain1_link_2" link2="Chain2_link_2" reason="Closure"/>
+    <disable_collisions link1="Chain1_link_1" link2="Chain2_link_1" reason="Never"/>
+    <disable_collisions link1="Chain1_link_1" link2="Chain2_link_2" reason="Never"/>
+    <disable_collisions link1="Chain1_link_2" link2="Chain2_link_1" reason="Never"/>
+    <disable_collisions link1="base_link" link2="Chain1_link_2" reason="Never"/>
+    <disable_collisions link1="base_link" link2="Chain2_link_2" reason="Never"/>
+</robot>

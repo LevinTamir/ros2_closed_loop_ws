@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!-- MoveIt planning extras for fivebar_linkage (gated by planning:=true).
+     MoveIt cannot plan a closed loop, so we give it an OPEN phantom chain: two
+     prismatic joints that position the end-effector point `tool0`. MoveIt plans these;
+     the joint_state_transformer node converts the planned tool pose into the real motor
+     angles (IK) via robot_model. Mirrors the reference tool_joint_* chain, but planar/2-DOF.
+
+     The 5-bar EE moves in the base_link plane x ~ X_EE_PLANE (every joint axis is parallel
+     to base_link x, so the EE x-coordinate is invariant). So 2 DOF (y, z) suffice.
+     Included by fivebar_linkage.urdf.xacro. The tip link MUST be named `tool0`
+     (robot_model + MoveIt key the end-effector off that name). -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- x of the EE motion plane in base_link. Measured from robot_model FK: the left arm tip
+       sits at (x,z) = (0.289, +0.749) at q=0 (the right arm is 4 mm off in x — a URDF export
+       asymmetry the Gazebo DetachableJoint welds across; the constraints macro shifts the right
+       tip to match). The EE moves in this x-plane; home is near (y,z)=(0, 0.749). -->
+  <xacro:property name="X_EE_PLANE" value="0.289"/>
+
+  <!-- z of the EE at the home (q=0) assembly, in base_link -->
+  <xacro:property name="Z_EE_HOME" value="0.749"/>
+
+  <link name="tool_planar_y"/>
+  <link name="tool0"/>
+
+  <!-- The phantom origins place tool0 at the home EE (X_EE_PLANE, 0, Z_EE_HOME) when BOTH
+       phantom joints are 0. So tool_joint_y/z are EE displacement FROM home: the model's
+       default state IS home, and MoveIt's goal marker starts exactly on the EE. -->
+  <joint name="tool_joint_y" type="prismatic">
+    <parent link="base_link"/>
+    <child link="tool_planar_y"/>
+    <origin xyz="${X_EE_PLANE} 0 ${Z_EE_HOME}" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.6" upper="0.6" effort="0" velocity="2.0"/>
+  </joint>
+
+  <joint name="tool_joint_z" type="prismatic">
+    <parent link="tool_planar_y"/>
+    <child link="tool0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.6" upper="0.4" effort="0" velocity="2.0"/>
+  </joint>
+
+</robot>

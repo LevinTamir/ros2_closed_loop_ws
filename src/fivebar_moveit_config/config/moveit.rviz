@@ -1,0 +1,82 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+  - Class: moveit_rviz_plugin/MotionPlanning
+    Name: MotionPlanning
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Value: true
+      Show Names: true
+    - Class: moveit_rviz_plugin/Trajectory
+      Name: ClosedLoopPreview
+      Enabled: true
+      Robot Description: robot_description
+      Trajectory Topic: /display_planned_path_full
+      Show Robot Visual: true
+      Show Robot Collision: false
+      Loop Animation: false
+      Interrupt Display: false
+      Robot Alpha: 0.6
+      State Display Time: 0.05 s
+      Color Enabled: true
+      Robot Color: 255; 130; 0
+    - Class: moveit_rviz_plugin/MotionPlanning
+      Name: MotionPlanning
+      Enabled: true
+      Move Group Namespace: ""
+      MoveIt_Goal_Tolerance: 0
+      MoveIt_Planning_Group: ee
+      MoveIt_Use_Cartesian_Path: false
+      Planned Path:
+        Loop Animation: true
+        Show Robot Collision: false
+        Show Robot Visual: false
+        Show Trail: false
+        State Display Time: 0.05 s
+        Trajectory Topic: /display_planned_path
+      Planning Metrics:
+        Show Weight Limit: false
+      Planning Request:
+        Interactive Marker Size: 0.35
+        Planning Group: ee
+        Query Goal State: true
+        Query Start State: false
+      Planning Scene Topic: /monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Display Time: 0.2
+      Scene Robot:
+        Show Robot Collision: false
+        Show Robot Visual: true
+      Value: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 3.5
+      Focal Point:
+        X: 0.2
+        Y: 0
+        Z: 0.3
+      Name: Current View
+      Pitch: 0.4
+      Yaw: 0.8
+Window Geometry:
+  Height: 900
+  Width: 1400

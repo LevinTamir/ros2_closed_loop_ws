@@ -1,0 +1,12 @@
+# Velocity/acceleration limits for MoveIt time parameterization of the phantom EE joints.
+joint_limits:
+  tool_joint_y:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 2.0
+  tool_joint_z:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 2.0

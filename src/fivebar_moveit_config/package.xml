@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>fivebar_moveit_config</name>
+  <version>0.1.0</version>
+  <description>MoveIt configuration for planning the closed-loop fivebar_linkage via the
+    joint_state_transformer pipeline (plans the phantom EE chain; transformer maps to motors).</description>
+  <maintainer email="tamirlvn@gmail.com">Tamir Levin</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_kinematics</exec_depend>
+  <exec_depend>moveit_planners_ompl</exec_depend>
+  <exec_depend>moveit_simple_controller_manager</exec_depend>
+  <exec_depend>moveit_configs_utils</exec_depend>
+  <exec_depend>joint_state_transformer</exec_depend>
+  <exec_depend>closed_loop_description</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

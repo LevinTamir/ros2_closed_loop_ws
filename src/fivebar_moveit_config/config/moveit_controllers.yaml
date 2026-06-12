@@ -1,0 +1,20 @@
+# MoveIt sends the planned EE (phantom) trajectory to the joint_state_transformer node, which
+# MoveIt treats as an ordinary FollowJointTrajectory controller. The transformer runs IK
+# (robot_model + Levenberg-Marquardt) to convert it into the real motor trajectory and forwards
+# that to the actuated_joint_trajectory_controller running in Gazebo (gz_ros2_control).
+#
+# action resolved to: /joint_state_transformer/follow_joint_trajectory
+# (controller name 'joint_state_transformer' + action_ns 'follow_joint_trajectory'), which is
+# the transformer node's input action server (~/follow_joint_trajectory).
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - joint_state_transformer
+  joint_state_transformer:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - tool_joint_y
+      - tool_joint_z

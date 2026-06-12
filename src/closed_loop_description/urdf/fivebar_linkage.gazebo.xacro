@@ -3,6 +3,63 @@
 <!-- Included by fivebar_linkage.urdf.xacro via <xacro:include>. -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <!-- ===================================================================
+       Loop-closure helper frames (Gazebo/DetachableJoint only).
+       These are the leaves the DetachableJoint welds together; they live here (not in
+       the shared base tree) because the robot_model and MoveIt renders close the loop
+       differently and would see Chain1_closure as a dangling free joint.
+       Both frames are coincident at q=0 so the weld locks with zero relative motion. =-->
+
+  <!-- Massless tip frame fixed to the right arm at the physical closure point -->
+  <link name="Chain2_tip">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.001" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><sphere radius="0.008" /></geometry>
+      <material name="tip_green"><color rgba="0.95 0.75 0.10 1.0" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><sphere radius="0.008" /></geometry>
+    </collision>
+  </link>
+  <joint name="Chain2_tip_joint" type="fixed">
+    <origin xyz="0 0 0.6225" rpy="0 0 0" />
+    <parent link="Chain2_link_2" />
+    <child link="Chain2_tip" />
+  </joint>
+
+  <!-- Closure dummy link: URDF-tree leaf on the left arm, DetachableJoint target.
+       rpy=(1.8398,0,0) rotates it so its frame matches Chain2_tip at q=0. -->
+  <link name="Chain1_dummy">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <mass value="0.001" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><sphere radius="0.008" /></geometry>
+      <material name="closure_purple"><color rgba="0.95 0.75 0.10 1.0" /></material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry><sphere radius="0.008" /></geometry>
+    </collision>
+  </link>
+  <joint name="Chain1_closure" type="revolute">
+    <origin xyz="0 0 0.6225" rpy="1.8398 0 0" />
+    <parent link="Chain1_link_2" />
+    <child link="Chain1_dummy" />
+    <axis xyz="1 0 0" />
+    <limit lower="-3.14" upper="3.14" effort="0" velocity="10" />
+    <dynamics damping="0.1" friction="0.0" />
+  </joint>
+
   <!-- Prevent Gazebo from merging this fixed joint so DetachableJoint can find the link -->
   <gazebo reference="Chain2_tip_joint">
     <preserveFixedJoint>true</preserveFixedJoint>
@@ -17,45 +74,48 @@
     </plugin>
   </gazebo>
 
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain1_1</joint_name>
-      <topic>/fivebar_linkage/Chain1_1/cmd_pos</topic>
-      <p_gain>10</p_gain>
-      <i_gain>1</i_gain>
-      <d_gain>1</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>10</cmd_max>
-      <cmd_min>-10</cmd_min>
-    </plugin>
-  </gazebo>
+  <!-- Open-loop control path (pure-sim only). When ros2_control:=true these are OFF and the
+       active joints are driven by gz_ros2_control / the actuated_joint_trajectory_controller
+       instead, so they are not double-commanded. -->
+  <xacro:unless value="$(arg ros2_control)">
+    <gazebo>
+      <plugin filename="libgz-sim-joint-position-controller-system.so"
+              name="gz::sim::systems::JointPositionController">
+        <joint_name>Chain1_1</joint_name>
+        <topic>/fivebar_linkage/Chain1_1/cmd_pos</topic>
+        <p_gain>10</p_gain>
+        <i_gain>1</i_gain>
+        <d_gain>1</d_gain>
+        <i_max>5</i_max>
+        <i_min>-5</i_min>
+        <cmd_max>10</cmd_max>
+        <cmd_min>-10</cmd_min>
+      </plugin>
+    </gazebo>
 
-  <gazebo>
-    <plugin filename="libgz-sim-joint-position-controller-system.so"
-            name="gz::sim::systems::JointPositionController">
-      <joint_name>Chain2_1</joint_name>
-      <topic>/fivebar_linkage/Chain2_1/cmd_pos</topic>
-      <p_gain>10</p_gain>
-      <i_gain>1</i_gain>
-      <d_gain>1</d_gain>
-      <i_max>5</i_max>
-      <i_min>-5</i_min>
-      <cmd_max>10</cmd_max>
-      <cmd_min>-10</cmd_min>
-    </plugin>
-  </gazebo>
+    <gazebo>
+      <plugin filename="libgz-sim-joint-position-controller-system.so"
+              name="gz::sim::systems::JointPositionController">
+        <joint_name>Chain2_1</joint_name>
+        <topic>/fivebar_linkage/Chain2_1/cmd_pos</topic>
+        <p_gain>10</p_gain>
+        <i_gain>1</i_gain>
+        <d_gain>1</d_gain>
+        <i_max>5</i_max>
+        <i_min>-5</i_min>
+        <cmd_max>10</cmd_max>
+        <cmd_min>-10</cmd_min>
+      </plugin>
+    </gazebo>
 
-  <!-- Joint state publisher: broadcasts all joint positions back to ROS2 -->
-  <gazebo>
-    <plugin filename="libgz-sim-joint-state-publisher-system.so"
-            name="gz::sim::systems::JointStatePublisher">
-      <!-- publish ONLY the actuated joints, to mimic real encoders;
-           the passive joints are not measured on real hardware -->
-      <joint_name>Chain1_1</joint_name>
-      <joint_name>Chain2_1</joint_name>
-    </plugin>
-  </gazebo>
+    <!-- Joint state publisher: broadcasts the actuated joints back to ROS2 (mimics encoders) -->
+    <gazebo>
+      <plugin filename="libgz-sim-joint-state-publisher-system.so"
+              name="gz::sim::systems::JointStatePublisher">
+        <joint_name>Chain1_1</joint_name>
+        <joint_name>Chain2_1</joint_name>
+      </plugin>
+    </gazebo>
+  </xacro:unless>
 
 </robot>
