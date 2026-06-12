@@ -464,6 +464,24 @@
     <child link="Chain4_tip"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
+
+  <!-- ===================================================================
+       Single source of truth: one kinematic tree + flag-gated add-on macros (mirrors the
+       sim/gazebo split). The platform (platform_x/y/z -> tool_holder -> Chain4_1 -> tool0) and the
+       central telescopic column are already in the base tree; base_link -> tool0 IS the MoveIt
+       planning chain. The closure helper chains below (Chain*_cl_*, Chain*_dummy) are
+       DetachableJoint targets, sim-only; robot_model closes the loops with spherical <constraint>s
+       anchored on the forearms / Chain4_bottom_link (4dof_delta.constraints.xacro) instead.
+         Gazebo:      sim:=true ros2_control:=true
+         MoveIt:      (base tree; sim:=false)
+         transformer: constraints:=true
+       =================================================================== -->
+  <xacro:arg name="sim"          default="true"/>
+  <xacro:arg name="ros2_control" default="false"/>
+  <xacro:arg name="constraints"  default="false"/>
+
+  <xacro:if value="$(arg sim)">
+
   <link name="Chain4_dummy">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -651,12 +669,13 @@
     <dynamics damping="0.02" friction="0.0"/>
   </joint>
 
-  <!-- Sim vs. real separation: the kinematics above are shared by both. The Gazebo
-       system plugins and DetachableJoint loop closures are simulation-only, so they live
-       in a separate file included only when sim:=true. For real-hardware bringup
-       (sim:=false) a 4dof_delta.ros2_control.xacro will be included here instead (added later). -->
-  <xacro:arg name="sim" default="true"/>
-  <xacro:if value="$(arg sim)">
     <xacro:include filename="4dof_delta.gazebo.xacro"/>
+  </xacro:if>  <!-- end sim: closure helpers + Gazebo plugins -->
+
+  <xacro:if value="$(arg ros2_control)">
+    <xacro:include filename="4dof_delta.ros2_control.xacro"/>
+  </xacro:if>
+  <xacro:if value="$(arg constraints)">
+    <xacro:include filename="4dof_delta.constraints.xacro"/>
   </xacro:if>
 </robot>

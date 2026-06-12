@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>fivebar_moveit_config</name>
+  <name>closed_loop_moveit_config</name>
   <version>0.1.0</version>
-  <description>MoveIt configuration for planning the closed-loop fivebar_linkage via the
-    joint_state_transformer pipeline (plans the phantom EE chain; transformer maps to motors).</description>
+  <description>MoveIt configurations for planning the closed-loop robots (fivebar_linkage,
+    delta_3dof, delta_4dof) via the joint_state_transformer pipeline (plan the EE pose;
+    the transformer maps it to the actuated motors).</description>
   <maintainer email="tamirlvn@gmail.com">Tamir Levin</maintainer>
   <license>Apache-2.0</license>
 

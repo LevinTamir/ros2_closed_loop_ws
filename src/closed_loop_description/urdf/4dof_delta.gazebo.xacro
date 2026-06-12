@@ -47,6 +47,10 @@
     </plugin>
   </gazebo>
 
+  <!-- Open-loop control path (pure-sim only). OFF when ros2_control:=true; then the active
+       joints are driven by gz_ros2_control / actuated_joint_trajectory_controller instead. -->
+  <xacro:unless value="$(arg ros2_control)">
+
   <!-- actuated joint controllers: 3 arms + 1 EE rotation -->
   <gazebo>
     <plugin filename="libgz-sim-joint-position-controller-system.so"
@@ -119,5 +123,7 @@
       <joint_name>Chain4_1</joint_name>
     </plugin>
   </gazebo>
+
+  </xacro:unless>
 
 </robot>

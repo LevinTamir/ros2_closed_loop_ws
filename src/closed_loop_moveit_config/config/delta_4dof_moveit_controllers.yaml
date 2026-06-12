@@ -1,0 +1,17 @@
+# MoveIt sends the planned platform-pose + flange-rotation trajectory to the joint_state_transformer
+# (a FollowJointTrajectory controller); the transformer runs IK to the four motors and forwards to
+# the actuated_joint_trajectory_controller in Gazebo.
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - joint_state_transformer
+  joint_state_transformer:
+    type: FollowJointTrajectory
+    action_ns: follow_joint_trajectory
+    default: true
+    joints:
+      - platform_x
+      - platform_y
+      - platform_z
+      - Chain4_1

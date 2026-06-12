@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!-- Closed-loop constraint extras for delta_3dof (gated by constraints:=true).
+     Consumed by robot_model / the joint_state_transformer node (NOT Gazebo or MoveIt).
+     The platform (tool0) and its 3 prismatic joints are already in the base tree and serve as
+     the EE/planning DOF; here we only mark the motors active and close each leg onto the platform.
+     - <transmission> marks Chain{1,2,3}_1 ACTIVE (passives have none).
+     - Each spherical <constraint> coincides a leg forearm tip (ChainN_tip) with its platform
+       mount point on tool0 (the ChainN_cl_A origins), closing the loop the same way the Gazebo
+       DetachableJoint welds ChainN_tip <-> ChainN_dummy. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <transmission name="Chain1_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain1_1"/>
+    <actuator name="Chain1_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+  <transmission name="Chain2_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain2_1"/>
+    <actuator name="Chain2_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+  <transmission name="Chain3_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain3_1"/>
+    <actuator name="Chain3_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+
+  <!-- Spherical closure: each leg forearm tip coincides with its platform mount on tool0.
+       Anchor on ChainN_forearm with parent_origin = the forearm length (0.1668, the ChainN_tip_joint
+       offset): pinocchio merges the fixed tip joint, so robot_model resolves ChainN_tip to the
+       forearm body (the elbow) and loses the offset — supplying it here in the BETA-oriented forearm
+       frame reaches the true tip (cf. the fivebar Chain1_link_2 + 0.6225 pattern). child_origin =
+       the platform mount (the ChainN_cl_A origin, radius 0.0276); spherical ignores rpy. -->
+  <constraint name="Chain1_ee_constraint" type="spherical_joint">
+    <parent link="Chain1_forearm"/>
+    <parent_origin xyz="0.166800 0 0"/>
+    <child link="tool0"/>
+    <child_origin xyz="0.027600 0.000000 0"/>
+  </constraint>
+  <constraint name="Chain2_ee_constraint" type="spherical_joint">
+    <parent link="Chain2_forearm"/>
+    <parent_origin xyz="0.166800 0 0"/>
+    <child link="tool0"/>
+    <child_origin xyz="-0.013800 0.023902 0"/>
+  </constraint>
+  <constraint name="Chain3_ee_constraint" type="spherical_joint">
+    <parent link="Chain3_forearm"/>
+    <parent_origin xyz="0.166800 0 0"/>
+    <child link="tool0"/>
+    <child_origin xyz="-0.013800 -0.023902 0"/>
+  </constraint>
+
+</robot>

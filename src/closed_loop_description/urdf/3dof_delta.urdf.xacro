@@ -348,6 +348,25 @@
     <dynamics damping="0.5" friction="0.0"/>
   </joint>
 
+  <!-- ===================================================================
+       Single source of truth: one kinematic tree + flag-gated add-on macros (mirrors the
+       sim/gazebo split). The moving platform (platform_x/y/z -> tool0) is already in the base
+       tree and IS the MoveIt planning chain base_link -> tool0. The closure helper chains
+       (Chain*_cl_*, Chain*_dummy) stay in the base tree: the Gazebo DetachableJoint and the
+       robot_model fixed <constraint> (3dof_delta.constraints.xacro) both weld ChainN_tip onto
+       ChainN_dummy, the cl chain providing the ball-joint freedom.
+         Gazebo:      sim:=true ros2_control:=true
+         MoveIt:      (base tree; sim:=false)
+         transformer: constraints:=true
+       =================================================================== -->
+  <xacro:arg name="sim"          default="true"/>
+  <xacro:arg name="ros2_control" default="false"/>
+  <xacro:arg name="constraints"  default="false"/>
+
+  <!-- closure helper chains: DetachableJoint targets, sim-only. robot_model closes the loop with
+       spherical <constraint>s anchored on the forearms (3dof_delta.constraints.xacro) instead. -->
+  <xacro:if value="$(arg sim)">
+
   <!-- leg 1: DetachableJoint weld -->
   <link name="Chain1_dummy">
     <inertial>
@@ -489,12 +508,13 @@
     <dynamics damping="0.02" friction="0.0"/>
   </joint>
 
-  <!-- Sim vs. real separation: the kinematics above are shared by both. The Gazebo
-       system plugins and DetachableJoint loop closures are simulation-only, so they live
-       in a separate file included only when sim:=true. For real-hardware bringup
-       (sim:=false) a 3dof_delta.ros2_control.xacro will be included here instead (added later). -->
-  <xacro:arg name="sim" default="true"/>
-  <xacro:if value="$(arg sim)">
     <xacro:include filename="3dof_delta.gazebo.xacro"/>
+  </xacro:if>  <!-- end sim: closure helpers + Gazebo plugins -->
+
+  <xacro:if value="$(arg ros2_control)">
+    <xacro:include filename="3dof_delta.ros2_control.xacro"/>
+  </xacro:if>
+  <xacro:if value="$(arg constraints)">
+    <xacro:include filename="3dof_delta.constraints.xacro"/>
   </xacro:if>
 </robot>

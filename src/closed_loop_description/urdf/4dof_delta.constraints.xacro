@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!-- Closed-loop constraint extras for delta_4dof (gated by constraints:=true).
+     Consumed by robot_model / the joint_state_transformer node (NOT Gazebo or MoveIt).
+     The platform (platform_x/y/z -> tool_holder) + the actuated flange (Chain4_1: tool_holder->tool0)
+     are in the base tree; base_link -> tool0 is the planning chain. We mark the 4 motors active and
+     close each loop with a spherical <constraint>:
+       - 3 legs: forearm tip -> tool_holder mount (anchor on ChainN_forearm + 0.96 forearm length,
+         since pinocchio merges the fixed tip joint and resolves ChainN_tip to the forearm body).
+       - central telescopic column: Chain4_bottom_link tip -> tool0 (Chain4_tip_joint offset is 0). -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <transmission name="Chain1_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain1_1"/><actuator name="Chain1_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+  <transmission name="Chain2_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain2_1"/><actuator name="Chain2_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+  <transmission name="Chain3_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain3_1"/><actuator name="Chain3_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+  <transmission name="Chain4_transmission">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="Chain4_1"/><actuator name="Chain4_actuator"><mechanicalReduction>1.0</mechanicalReduction></actuator>
+  </transmission>
+
+  <!-- legs: forearm tip (forearm + 0.96) coincides with its tool_holder mount (ChainN_cl_A origin) -->
+  <constraint name="Chain1_ee_constraint" type="spherical_joint">
+    <parent link="Chain1_forearm"/><parent_origin xyz="0.960000 0 0"/>
+    <child link="tool_holder"/><child_origin xyz="0.070000 0.000000 0"/>
+  </constraint>
+  <constraint name="Chain2_ee_constraint" type="spherical_joint">
+    <parent link="Chain2_forearm"/><parent_origin xyz="0.960000 0 0"/>
+    <child link="tool_holder"/><child_origin xyz="-0.035000 0.060622 0"/>
+  </constraint>
+  <constraint name="Chain3_ee_constraint" type="spherical_joint">
+    <parent link="Chain3_forearm"/><parent_origin xyz="0.960000 0 0"/>
+    <child link="tool_holder"/><child_origin xyz="-0.035000 -0.060622 0"/>
+  </constraint>
+
+  <!-- central telescopic column tip coincides with tool0 (the rotating flange) -->
+  <constraint name="Chain4_ee_constraint" type="spherical_joint">
+    <parent link="Chain4_bottom_link"/><parent_origin xyz="0 0 0"/>
+    <child link="tool0"/><child_origin xyz="0 0 0"/>
+  </constraint>
+
+</robot>

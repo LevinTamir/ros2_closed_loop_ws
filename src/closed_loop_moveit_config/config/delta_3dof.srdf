@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Semantic description for MoveIt planning of delta_3dof.
+     MoveIt plans the 3 platform prismatic joints (base_link -> tool0); the joint_state_transformer
+     converts the planned platform pose into the three motor angles. The legs are passive. -->
+<robot name="delta_3dof">
+
+    <!-- Planning group: the moving platform's 3 translational DOF -->
+    <group name="ee">
+        <chain base_link="base_link" tip_link="tool0"/>
+    </group>
+
+    <!-- Home = the q=0 assembly (platform at the origin offset); marker spawns on the EE -->
+    <group_state name="home" group="ee">
+        <joint name="platform_x" value="0.0"/>
+        <joint name="platform_y" value="0.0"/>
+        <joint name="platform_z" value="0.0"/>
+    </group_state>
+
+    <!-- The real linkage joints are driven by the loop closure, not commanded directly by MoveIt -->
+    <passive_joint name="Chain1_1"/>
+    <passive_joint name="Chain1_top_A"/><passive_joint name="Chain1_top_B"/><passive_joint name="Chain1_top_C"/>
+    <passive_joint name="Chain2_1"/>
+    <passive_joint name="Chain2_top_A"/><passive_joint name="Chain2_top_B"/><passive_joint name="Chain2_top_C"/>
+    <passive_joint name="Chain3_1"/>
+    <passive_joint name="Chain3_top_A"/><passive_joint name="Chain3_top_B"/><passive_joint name="Chain3_top_C"/>
+
+    <!-- The permanently-closed mechanism: disable the loop link pairs so it is not reported as
+         self-colliding (the legs are static during platform planning). -->
+    <disable_collisions link1="base_link" link2="Chain1_link_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="Chain2_link_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="Chain3_link_1" reason="Adjacent"/>
+    <disable_collisions link1="Chain1_link_1" link2="Chain1_forearm" reason="Adjacent"/>
+    <disable_collisions link1="Chain2_link_1" link2="Chain2_forearm" reason="Adjacent"/>
+    <disable_collisions link1="Chain3_link_1" link2="Chain3_forearm" reason="Adjacent"/>
+    <disable_collisions link1="Chain1_forearm" link2="tool0" reason="Closure"/>
+    <disable_collisions link1="Chain2_forearm" link2="tool0" reason="Closure"/>
+    <disable_collisions link1="Chain3_forearm" link2="tool0" reason="Closure"/>
+    <disable_collisions link1="Chain1_link_1" link2="Chain2_link_1" reason="Never"/>
+    <disable_collisions link1="Chain1_link_1" link2="Chain3_link_1" reason="Never"/>
+    <disable_collisions link1="Chain2_link_1" link2="Chain3_link_1" reason="Never"/>
+    <disable_collisions link1="Chain1_forearm" link2="Chain2_forearm" reason="Never"/>
+    <disable_collisions link1="Chain1_forearm" link2="Chain3_forearm" reason="Never"/>
+    <disable_collisions link1="Chain2_forearm" link2="Chain3_forearm" reason="Never"/>
+    <disable_collisions link1="base_link" link2="tool0" reason="Never"/>
+</robot>

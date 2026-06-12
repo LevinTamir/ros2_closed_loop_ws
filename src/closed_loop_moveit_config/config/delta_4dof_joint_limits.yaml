@@ -1,0 +1,22 @@
+# Velocity/acceleration limits for MoveIt time parameterization of the delta_4dof planning joints.
+joint_limits:
+  platform_x:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 3.0
+  platform_y:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 3.0
+  platform_z:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 3.0
+  Chain4_1:
+    has_velocity_limits: true
+    max_velocity: 2.0
+    has_acceleration_limits: true
+    max_acceleration: 6.0

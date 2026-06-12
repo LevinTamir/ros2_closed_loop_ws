@@ -1,0 +1,24 @@
+# ros2_control controllers for delta_4dof active joints (3 leg motors + flange Chain4_1).
+controller_manager:
+  ros__parameters:
+    update_rate: 200  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    actuated_joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+actuated_joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - Chain1_1
+      - Chain2_1
+      - Chain3_1
+      - Chain4_1
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    allow_nonzero_velocity_at_trajectory_end: true
