@@ -62,13 +62,11 @@ def generate_launch_description():
         package="robot_state_publisher", executable="robot_state_publisher",
         parameters=[{"robot_description": sim_urdf, "use_sim_time": True}],
     )
-    gui_config = os.path.join(desc_pkg, "config", "delta_3dof_gui.config")  # isometric initial camera
     gz_flags = PythonExpression(["'-s -r' if '", LaunchConfiguration("gui"), "' == 'false' else '-r'"])
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory("ros_gz_sim"), "launch"), "/gz_sim.launch.py"]),
-        launch_arguments={"gz_args": PythonExpression(
-            ["' ", world_path, " -v 4 --gui-config ", gui_config, " ' + '", gz_flags, "'"])}.items(),
+        launch_arguments={"gz_args": PythonExpression(["' ", world_path, " -v 4 ' + '", gz_flags, "'"])}.items(),
     )
     spawn = Node(
         package="ros_gz_sim", executable="create", output="screen",
