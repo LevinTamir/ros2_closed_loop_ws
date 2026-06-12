@@ -55,7 +55,7 @@ Visualization Manager:
           Value: true
         world:
           Value: true
-      Marker Scale: 0.08
+      Marker Scale: 0.05
       Name: TF
       Show Arrows: false
       Show Axes: true
@@ -221,7 +221,7 @@ Visualization Manager:
         Colliding Link Color: 255; 0; 0
         Goal State Alpha: 1
         Goal State Color: 250; 128; 0
-        Interactive Marker Size: 0.15
+        Interactive Marker Size: 0.07
         Joint Violation Color: 255; 0; 255
         Planning Group: ee
         Query Goal State: true

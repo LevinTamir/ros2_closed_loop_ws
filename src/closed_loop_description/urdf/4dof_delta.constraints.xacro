@@ -40,10 +40,11 @@
     <child link="tool_holder"/><child_origin xyz="-0.035000 -0.060622 0"/>
   </constraint>
 
-  <!-- central telescopic column tip coincides with tool0 (the rotating flange) -->
-  <constraint name="Chain4_ee_constraint" type="spherical_joint">
-    <parent link="Chain4_bottom_link"/><parent_origin xyz="0 0 0"/>
-    <child link="tool0"/><child_origin xyz="0 0 0"/>
-  </constraint>
+  <!-- NOTE: the central telescopic column is intentionally NOT constrained here. The EE pose is
+       fully determined by the 3 legs (platform translation) + the actuated flange Chain4_1
+       (rotation); constraining the column too adds redundant passive DOF (a nullspace) that makes
+       the Levenberg-Marquardt IK flaky/non-convergent. The column is still simulated in Gazebo
+       (its own DetachableJoint) and follows physically. -->
+  <!-- (no Chain4 column constraint) -->
 
 </robot>

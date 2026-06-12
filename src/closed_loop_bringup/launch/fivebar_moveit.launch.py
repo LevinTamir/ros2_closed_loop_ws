@@ -137,7 +137,7 @@ def generate_launch_description():
         package="rviz2", executable="rviz2", name="rviz2", output="screen",
         condition=IfCondition(LaunchConfiguration("rviz")),
         arguments=["-d", os.path.join(get_package_share_directory("closed_loop_moveit_config"),
-                                      "config", "moveit.rviz")],
+                                      "config", "fivebar_linkage.rviz")],
         parameters=[
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,
