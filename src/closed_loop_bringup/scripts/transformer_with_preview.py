@@ -10,6 +10,8 @@ Trajectory display. No extra node/process and no second model load.
 """
 import numpy as np
 import rclpy
+from rclpy.action import ActionServer
+from control_msgs.action import FollowJointTrajectory
 from moveit_msgs.msg import DisplayTrajectory, RobotTrajectory
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from robot_model import levenbergMarquardt
@@ -26,6 +28,37 @@ class TransformerWithPreview(JointStateTransformer):
         self.preview_pub = self.create_publisher(DisplayTrajectory, out_t, 1)
         self.preview_sub = self.create_subscription(DisplayTrajectory, in_t, self.preview_cb, 1)
         self.get_logger().info(f'closed-loop preview expander active: {in_t} -> {out_t}')
+        # Fix an upstream joint-order bug: the base node assigns incoming trajectory positions by
+        # ascending robot_model index (`state[mask] = positions`), but MoveIt sends joint_names in
+        # its own order (e.g. [Chain4_1, platform_x, platform_y, platform_z] — alphabetical-ish),
+        # which scrambles the axes for the 4dof. Reorder every incoming trajectory to model order
+        # first, by wrapping the execute action with our own server.
+        self.action_server.destroy()
+        self.action_server = ActionServer(
+            self, FollowJointTrajectory,
+            self.get_parameter('input_action_name').value, self._reordered_execute)
+
+    def _reorder_traj(self, traj):
+        """Reorder a JointTrajectory's joint_names + per-point arrays to ascending model-index order."""
+        if self._joint_names is None or not traj.joint_names:
+            return
+        n2i = {n: i for i, n in enumerate(self._joint_names)}
+        jn = list(traj.joint_names)
+        perm = sorted(range(len(jn)), key=lambda k: n2i.get(jn[k], 1 << 30))
+        if perm == list(range(len(jn))):
+            return  # already in model order (3dof / fivebar)
+        traj.joint_names = [jn[k] for k in perm]
+        for p in traj.points:
+            if p.positions:
+                p.positions = [p.positions[k] for k in perm]
+            if p.velocities:
+                p.velocities = [p.velocities[k] for k in perm]
+            if p.accelerations:
+                p.accelerations = [p.accelerations[k] for k in perm]
+
+    async def _reordered_execute(self, goal_handle):
+        self._reorder_traj(goal_handle.request.trajectory)
+        return await self.execute_action_callback(goal_handle)
 
     def preview_cb(self, msg: DisplayTrajectory) -> None:
         if not self.initialized:
@@ -37,6 +70,7 @@ class TransformerWithPreview(JointStateTransformer):
             jt = rt.joint_trajectory
             if not jt.joint_names or not jt.points:
                 continue
+            self._reorder_traj(jt)  # same model-order fix as the execute path
             try:
                 mask_int = self.robot_model.joints.getMask(list(jt.joint_names))
             except Exception as e:  # noqa: BLE001
